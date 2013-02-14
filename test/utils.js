@@ -23,6 +23,11 @@ exports.getIssuer = function(assertion) {
   return doc.documentElement.getAttribute('Issuer');
 };
 
+exports.getAssertionID = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  return doc.documentElement.getAttribute('AssertionID');
+};
+
 exports.getIssueInstant = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement.getAttribute('IssueInstant');

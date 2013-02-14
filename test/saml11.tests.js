@@ -49,6 +49,17 @@ describe('saml 1.1', function () {
     assert.equal(now.minutes(), issueInstant.minutes());
   });
 
+  it('should create AssertionID and start with underscore', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key')
+    };
+
+    var signedAssertion = saml11.create(options);
+    var id = utils.getAssertionID(signedAssertion);
+    assert.equal('_', id[0]); // first char is underscore
+  });
+
   it('should create NotBefore and NotOnOrAfter properties', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
