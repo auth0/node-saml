@@ -168,7 +168,8 @@ describe('saml 1.1', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
       },
-      nameIdentifier: 'foo'
+      nameIdentifier:       'foo',
+      nameIdentifierFormat: 'http://schemas.xmlsoap.org/claims/UPN'
     };
 
     var signedAssertion = saml11.create(options);
@@ -177,6 +178,7 @@ describe('saml 1.1', function () {
 
     var nameIdentifier = utils.getNameIdentifier(signedAssertion);
     assert.equal('foo', nameIdentifier.textContent);
+    assert.equal('http://schemas.xmlsoap.org/claims/UPN', nameIdentifier.getAttribute('Format'));
 
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(2, attributes.length);
