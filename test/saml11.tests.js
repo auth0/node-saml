@@ -157,6 +157,16 @@ describe('saml 1.1', function () {
     assert.equal('foo', nameIdentifier.textContent);
   });
 
+  it('should not contains line breaks', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo'
+    };
+
+    var signedAssertion = saml11.create(options);
+    assert.equal(-1, signedAssertion.indexOf('\n'));
+  });
 
   it('should set AuthenticationInstant', function () {
     var options = {
