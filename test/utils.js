@@ -46,6 +46,12 @@ exports.getAudiences = function(assertion) {
             .getElementsByTagName('saml:Audience');
 };
 
+exports.getAuthenticationStatement = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  return doc.documentElement
+            .getElementsByTagName('saml:AuthenticationStatement')[0];
+};
+
 exports.getAttributes = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement

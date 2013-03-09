@@ -157,6 +157,32 @@ describe('saml 1.1', function () {
     assert.equal('foo', nameIdentifier.textContent);
   });
 
+
+  it('should set AuthenticationInstant', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo'
+    };
+
+    var signedAssertion = saml11.create(options);
+    var authenticationStatement = utils.getAuthenticationStatement(signedAssertion);
+    assert.ok(!!authenticationStatement.getAttribute('AuthenticationInstant'));
+  });
+
+  it('should set AuthenticationStatement NameIdentifier', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo'
+    };
+    var signedAssertion = saml11.create(options);
+    var nameIdentifier = utils.getAuthenticationStatement(signedAssertion)
+                              .getElementsByTagName('saml:NameIdentifier')
+                              .textContent;
+    assert.ok('foo', nameIdentifier);
+  });
+
   it('should test the whole thing', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
