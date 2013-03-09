@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" MajorVersion="1" MinorVersion="1" AssertionID="" IssueInstant="">
   <saml:Conditions>
     <saml:AudienceRestrictionCondition />
