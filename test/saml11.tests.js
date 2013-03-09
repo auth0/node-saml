@@ -188,9 +188,10 @@ describe('saml 1.1', function () {
     };
     var signedAssertion = saml11.create(options);
     var nameIdentifier = utils.getAuthenticationStatement(signedAssertion)
-                              .getElementsByTagName('saml:NameIdentifier')
+                              .getElementsByTagName('saml:NameIdentifier')[0]
                               .textContent;
-    assert.ok('foo', nameIdentifier);
+    console.log(nameIdentifier);
+    assert.equal('foo', nameIdentifier);
   });
 
   it('should test the whole thing', function () {
