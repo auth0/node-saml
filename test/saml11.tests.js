@@ -206,7 +206,7 @@ describe('saml 1.1', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
       },
       nameIdentifier:       'foo',
-      nameIdentifierFormat: 'http://schemas.xmlsoap.org/claims/UPN'
+      nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
     };
 
     var signedAssertion = saml11.create(options);
@@ -215,7 +215,7 @@ describe('saml 1.1', function () {
 
     var nameIdentifier = utils.getNameIdentifier(signedAssertion);
     assert.equal('foo', nameIdentifier.textContent);
-    assert.equal('http://schemas.xmlsoap.org/claims/UPN', nameIdentifier.getAttribute('Format'));
+    assert.equal('urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', nameIdentifier.getAttribute('Format'));
 
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(2, attributes.length);

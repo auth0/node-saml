@@ -4,7 +4,7 @@
   </saml:Conditions>
   <saml:AttributeStatement>
     <saml:Subject>
-      <saml:NameIdentifier />
+      <saml:NameIdentifier Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" />
       <saml:SubjectConfirmation>
         <saml:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:bearer</saml:ConfirmationMethod>
       </saml:SubjectConfirmation>
@@ -13,7 +13,7 @@
   <saml:AuthenticationStatement 
       AuthenticationMethod="urn:oasis:names:tc:SAML:1.0:am:password">
     <saml:Subject>
-       <saml:NameIdentifier Format="http://schemas.xmlsoap.org/claims/UPN">
+       <saml:NameIdentifier Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">
        </saml:NameIdentifier>
        <saml:SubjectConfirmation>
           <saml:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:bearer</saml:ConfirmationMethod>
