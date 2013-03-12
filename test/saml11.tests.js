@@ -190,9 +190,64 @@ describe('saml 1.1', function () {
     var nameIdentifier = utils.getAuthenticationStatement(signedAssertion)
                               .getElementsByTagName('saml:NameIdentifier')[0]
                               .textContent;
-    console.log(nameIdentifier);
     assert.equal('foo', nameIdentifier);
   });
+
+  it('should set AuthenticationStatement NameFormat', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo'
+    };
+    var signedAssertion = saml11.create(options);
+    var format = utils.getAuthenticationStatement(signedAssertion)
+                              .getElementsByTagName('saml:NameIdentifier')[0]
+                              .getAttribute('Format');
+    assert.equal('urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', format);
+  });
+
+  it('should set AttirubteStatement NameFormat', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo'
+    };
+    var signedAssertion = saml11.create(options);
+    var format = utils.getNameIdentifier(signedAssertion)
+                              .getAttribute('Format');
+    assert.equal('urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', format);
+  });
+
+
+it('should override AttirubteStatement NameFormat', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo',
+      nameIdentifierFormat: 'http://foo'
+    };
+    var signedAssertion = saml11.create(options);
+    var format = utils.getNameIdentifier(signedAssertion)
+                              .getAttribute('Format');
+    assert.equal('http://foo', format);
+  });
+
+
+it('should override AttirubteStatement NameFormat', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      nameIdentifier: 'foo',
+      nameIdentifierFormat: 'http://foo'
+    };
+    var signedAssertion = saml11.create(options);
+    var format = utils.getAuthenticationStatement(signedAssertion)
+                          .getElementsByTagName('saml:NameIdentifier')[0]
+                          .getAttribute('Format');
+
+    assert.equal('http://foo', format);
+  });
+
 
   it('should test the whole thing', function () {
     var options = {
