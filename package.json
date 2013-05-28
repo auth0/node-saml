@@ -1,6 +1,6 @@
 {
   "name": "saml",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "devDependencies": {
     "mocha": "*",
     "should": "~1.2.1"
@@ -14,7 +14,7 @@
   "author": "Matias Woloski (Auth0)",
   "license": "MIT",
   "dependencies": {
-    "xml-crypto": "=0.0.10",
+    "xml-crypto": "git://github.com/auth0/xml-crypto",
     "xmldom": "=0.1.15",
     "moment": "~1.7.2"
   },

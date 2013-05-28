@@ -3,6 +3,7 @@ var assert = require('assert'),
     utils = require('./utils'),
     moment = require('moment'),
     should = require('should'),
+    xmldom = require('xmldom'),
     saml11 = require('../lib/saml11');
 
 describe('saml 1.1', function () {
@@ -247,6 +248,21 @@ it('should override AttirubteStatement NameFormat', function () {
 
     assert.equal('http://foo', format);
   });
+
+  it('should place signature where specified', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      xpathToNodeBeforeSignature: "//*[local-name(.)='Conditions']"
+    };
+    var signedAssertion = saml11.create(options);
+    var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+    
+    var signature = doc.documentElement.getElementsByTagName('Signature');
+
+    assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
+  });
+
 
 
   it('should test the whole thing', function () {
