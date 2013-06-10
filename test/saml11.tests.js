@@ -113,7 +113,8 @@ describe('saml 1.1', function () {
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://undefinedattribute/ws/com.com': undefined
       }
     };
 
