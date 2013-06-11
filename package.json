@@ -14,7 +14,7 @@
   "author": "Matias Woloski (Auth0)",
   "license": "MIT",
   "dependencies": {
-    "xml-crypto": "git://github.com/auth0/xml-crypto",
+    "xml-crypto": "0.0.10",
     "xmldom": "=0.1.15",
     "moment": "~1.7.2"
   },
