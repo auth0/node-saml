@@ -18,7 +18,8 @@
     "xmldom": "=0.1.15",
     "moment": "~1.7.2",
     "xml-encryption": "~0.1.0",
-    "xpath": "0.0.5"
+    "xpath": "0.0.5",
+    "async": "~0.2.9"
   },
   "scripts": {
     "test": "mocha"
