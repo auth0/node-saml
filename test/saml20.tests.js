@@ -65,7 +65,7 @@ describe('saml 2.0', function () {
       audiences: 'urn:myapp',
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foó Bar'
       },
       nameIdentifier:       'foo',
       nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
@@ -86,7 +86,7 @@ describe('saml 2.0', function () {
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
     assert.equal('foo@bar.com', attributes[0].textContent);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
-    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('Fo&oacute; Bar', attributes[1].textContent);
 
     assert.equal('urn:issuer', utils.getSaml2Issuer(signedAssertion).textContent);
 

@@ -276,7 +276,7 @@ it('should override AttirubteStatement NameFormat', function () {
       audiences: 'urn:myapp',
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foó Bar'
       },
       nameIdentifier:       'foo',
       nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
@@ -297,7 +297,7 @@ it('should override AttirubteStatement NameFormat', function () {
     assert.equal('foo@bar.com', attributes[0].firstChild.textContent);
     assert.equal('name', attributes[1].getAttribute('AttributeName'));
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[1].getAttribute('AttributeNamespace'));
-    assert.equal('Foo Bar', attributes[1].firstChild.textContent);
+    assert.equal('Fo&oacute; Bar', attributes[1].firstChild.textContent);
 
     assert.equal('urn:issuer', utils.getIssuer(signedAssertion));
 
