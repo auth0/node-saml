@@ -65,7 +65,7 @@ describe('saml 2.0', function () {
       audiences: 'urn:myapp',
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foó Bar'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
       },
       nameIdentifier:       'foo',
       nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
@@ -86,7 +86,7 @@ describe('saml 2.0', function () {
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
     assert.equal('foo@bar.com', attributes[0].textContent);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
-    assert.equal('Foó Bar', attributes[1].textContent);
+    assert.equal('Foo Bar', attributes[1].textContent);
 
     assert.equal('urn:issuer', utils.getSaml2Issuer(signedAssertion).textContent);
 
@@ -104,9 +104,8 @@ describe('saml 2.0', function () {
     assert.equal('specific', authnContextClassRef.textContent);
   });
   
-  it('should set attributes escaping HTML entities', function () {
+  it('should set attributes escaping xml entities', function () {
     var options = {
-      escapeHtmlEntities: true,
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
       attributes: {
@@ -118,7 +117,7 @@ describe('saml 2.0', function () {
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(1, attributes.length);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[0].getAttribute('Name'));
-    assert.equal('Fo&oacute; Bar', attributes[0].textContent);
+    assert.equal('Fo&#243; Bar', attributes[0].textContent);
   });
 
   it('should create a saml 2.0 signed and encrypted assertion', function (done) {

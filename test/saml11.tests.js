@@ -148,9 +148,8 @@ describe('saml 1.1', function () {
     assert.equal('contributor', attributes[0].childNodes[1].textContent);
   });
 
-  it('should set attributes escaping HTML entities', function () {
+  it('should set attributes escaping xml entities', function () {
     var options = {
-      escapeHtmlEntities: true,
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
       attributes: {
@@ -163,7 +162,7 @@ describe('saml 1.1', function () {
     assert.equal(1, attributes.length);
     assert.equal('name', attributes[0].getAttribute('AttributeName'));
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[0].getAttribute('AttributeNamespace'));
-    assert.equal('Fo&oacute; Bar', attributes[0].firstChild.textContent);
+    assert.equal('Fo&#243; Bar', attributes[0].firstChild.textContent);
   });
 
   it('should set NameIdentifier', function () {
@@ -294,7 +293,7 @@ it('should override AttirubteStatement NameFormat', function () {
       audiences: 'urn:myapp',
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foó Bar'
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
       },
       nameIdentifier:       'foo',
       nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
@@ -315,7 +314,7 @@ it('should override AttirubteStatement NameFormat', function () {
     assert.equal('foo@bar.com', attributes[0].firstChild.textContent);
     assert.equal('name', attributes[1].getAttribute('AttributeName'));
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[1].getAttribute('AttributeNamespace'));
-    assert.equal('Foó Bar', attributes[1].firstChild.textContent);
+    assert.equal('Foo Bar', attributes[1].firstChild.textContent);
 
     assert.equal('urn:issuer', utils.getIssuer(signedAssertion));
 
