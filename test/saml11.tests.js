@@ -115,11 +115,16 @@ describe('saml 1.1', function () {
       attributes: {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
         'http://undefinedattribute/ws/com.com': undefined
       }
     };
 
     var signedAssertion = saml11.create(options);
+
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+    
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(2, attributes.length);
     assert.equal('emailaddress', attributes[0].getAttribute('AttributeName'));

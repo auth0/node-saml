@@ -56,6 +56,31 @@ describe('saml 2.0', function () {
     assert.equal('urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified', authnContextClassRef.textContent);
   });
 
+  it('should set attributes', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(2, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('Foo Bar', attributes[1].textContent);
+  });
+
   it('whole thing with specific authnContextClassRef', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
