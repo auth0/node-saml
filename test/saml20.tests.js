@@ -64,6 +64,7 @@ describe('saml 2.0', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
         'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'http://example.org/claims/testaccent': 'fóo', // should supports accents
         'http://undefinedattribute/ws/com.com': undefined
       }
     };
@@ -74,11 +75,13 @@ describe('saml 2.0', function () {
     assert.equal(true, isValid);
 
     var attributes = utils.getAttributes(signedAssertion);
-    assert.equal(2, attributes.length);
+    assert.equal(3, attributes.length);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
     assert.equal('foo@bar.com', attributes[0].textContent);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
     assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('fóo', attributes[2].textContent);
   });
 
   it('whole thing with specific authnContextClassRef', function () {
@@ -129,23 +132,65 @@ describe('saml 2.0', function () {
     assert.equal('specific', authnContextClassRef.textContent);
   });
 
-  it('should create a saml 2.0 signed and encrypted assertion', function (done) {
-    var options = {
-      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
-      key: fs.readFileSync(__dirname + '/test-auth0.key'),
-      encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
-      encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
-    };
+  describe('encryption', function () {
 
-    saml.create(options, function(err, encrypted) {
-      if (err) return done(err);
-      
-      xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+    it('should create a saml 2.0 signed and encrypted assertion', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+      };
+
+      saml.create(options, function(err, encrypted) {
         if (err) return done(err);
-        var isValid = utils.isValidSignature(decrypted, options.cert);
-        assert.equal(true, isValid);
-        done();
+        
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+          var isValid = utils.isValidSignature(decrypted, options.cert);
+          assert.equal(true, isValid);
+          done();
+        });
       });
     });
+
+    it('should set attributes', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        attributes: {
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+          'http://example.org/claims/testaccent': 'fóo', // should supports accents
+          'http://undefinedattribute/ws/com.com': undefined
+        }
+      };
+
+      saml.create(options, function(err, encrypted) {
+        if (err) return done(err);
+        
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+
+          var isValid = utils.isValidSignature(decrypted, options.cert);
+          assert.equal(true, isValid);
+
+          var attributes = utils.getAttributes(decrypted);
+          assert.equal(3, attributes.length);
+          assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+          assert.equal('foo@bar.com', attributes[0].textContent);
+          assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+          assert.equal('Foo Bar', attributes[1].textContent);
+          assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+          assert.equal('fóo', attributes[2].textContent);
+
+          done();
+        });
+      });
+    });
+    
   });
+
 });

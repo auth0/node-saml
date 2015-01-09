@@ -116,6 +116,7 @@ describe('saml 1.1', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
         'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'http://example.org/claims/testaccent': 'fóo', // should supports accents
         'http://undefinedattribute/ws/com.com': undefined
       }
     };
@@ -126,13 +127,16 @@ describe('saml 1.1', function () {
     assert.equal(true, isValid);
     
     var attributes = utils.getAttributes(signedAssertion);
-    assert.equal(2, attributes.length);
+    assert.equal(3, attributes.length);
     assert.equal('emailaddress', attributes[0].getAttribute('AttributeName'));
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[0].getAttribute('AttributeNamespace'));
     assert.equal('foo@bar.com', attributes[0].firstChild.textContent);
     assert.equal('name', attributes[1].getAttribute('AttributeName'));
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[1].getAttribute('AttributeNamespace'));
     assert.equal('Foo Bar', attributes[1].firstChild.textContent);
+    assert.equal('testaccent', attributes[2].getAttribute('AttributeName'));
+    assert.equal('http://example.org/claims', attributes[2].getAttribute('AttributeNamespace'));
+    assert.equal('fóo', attributes[2].firstChild.textContent);
   });
 
   it('should set attributes with multiple values', function () {
@@ -318,56 +322,99 @@ it('should override AttirubteStatement NameFormat', function () {
 
   });
 
-  it('should create a saml 1.1 signed and encrypted assertion', function (done) {
-    var options = {
-      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
-      key: fs.readFileSync(__dirname + '/test-auth0.key'),
-      encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
-      encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
-    };
+  describe('encryption', function () {
 
-    saml11.create(options, function(err, encrypted) {
-      if (err) return done(err);
-      
-      xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
-        if (err) return done(err);
-        var isValid = utils.isValidSignature(decrypted, options.cert);
-        assert.equal(true, isValid);
-        done();
-      });
-    });
-  });
+    it('should create a saml 1.1 signed and encrypted assertion', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+      };
 
-  it('should support holder-of-key suject confirmationmethod', function (done) {
-    var options = {
-      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
-      key: fs.readFileSync(__dirname + '/test-auth0.key'),
-      encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
-      encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
-      subjectConfirmationMethod: 'holder-of-key'
-    };
-
-    saml11.create(options, function(err, encrypted, proofSecret) {
-      if (err) return done(err);
-      
-      xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+      saml11.create(options, function(err, encrypted) {
         if (err) return done(err);
         
-        var doc = new xmldom.DOMParser().parseFromString(decrypted);
-        var subjectConfirmationNodes = doc.documentElement.getElementsByTagName('saml:SubjectConfirmation');
-        assert.equal(2, subjectConfirmationNodes.length);
-        for (var i=0;i<subjectConfirmationNodes.length;i++) {
-          var method = subjectConfirmationNodes[i].getElementsByTagName('saml:ConfirmationMethod')[0];
-          assert.equal(method.textContent, 'urn:oasis:names:tc:SAML:1.0:cm:holder-of-key');
-
-          var decryptedProofSecret = xmlenc.decryptKeyInfo(subjectConfirmationNodes[i], options);
-          assert.equal(proofSecret.toString('base64'), decryptedProofSecret.toString('base64'));
-        }
-
-        done();
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+          var isValid = utils.isValidSignature(decrypted, options.cert);
+          assert.equal(true, isValid);
+          done();
+        });
       });
     });
-  });
 
+    it('should support holder-of-key suject confirmationmethod', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        subjectConfirmationMethod: 'holder-of-key'
+      };
+
+      saml11.create(options, function(err, encrypted, proofSecret) {
+        if (err) return done(err);
+        
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+          
+          var doc = new xmldom.DOMParser().parseFromString(decrypted);
+          var subjectConfirmationNodes = doc.documentElement.getElementsByTagName('saml:SubjectConfirmation');
+          assert.equal(2, subjectConfirmationNodes.length);
+          for (var i=0;i<subjectConfirmationNodes.length;i++) {
+            var method = subjectConfirmationNodes[i].getElementsByTagName('saml:ConfirmationMethod')[0];
+            assert.equal(method.textContent, 'urn:oasis:names:tc:SAML:1.0:cm:holder-of-key');
+
+            var decryptedProofSecret = xmlenc.decryptKeyInfo(subjectConfirmationNodes[i], options);
+            assert.equal(proofSecret.toString('base64'), decryptedProofSecret.toString('base64'));
+          }
+
+          done();
+        });
+      });
+    });
+
+    it('should set attributes', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        attributes: {
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+          'http://example.org/claims/testaccent': 'fóo', // should supports accents
+          'http://undefinedattribute/ws/com.com': undefined
+        }
+      };
+
+      saml11.create(options, function(err, encrypted) {
+        if (err) return done(err);
+        
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+
+          var isValid = utils.isValidSignature(decrypted, options.cert);
+          assert.equal(true, isValid);
+          
+          var attributes = utils.getAttributes(decrypted);
+          assert.equal(3, attributes.length);
+          assert.equal('emailaddress', attributes[0].getAttribute('AttributeName'));
+          assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[0].getAttribute('AttributeNamespace'));
+          assert.equal('foo@bar.com', attributes[0].firstChild.textContent);
+          assert.equal('name', attributes[1].getAttribute('AttributeName'));
+          assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims', attributes[1].getAttribute('AttributeNamespace'));
+          assert.equal('Foo Bar', attributes[1].firstChild.textContent);
+          assert.equal('testaccent', attributes[2].getAttribute('AttributeName'));
+          assert.equal('http://example.org/claims', attributes[2].getAttribute('AttributeNamespace'));
+          assert.equal('fóo', attributes[2].firstChild.textContent);
+          
+          done();
+        });
+      });
+    });
+
+  });
 
 });
