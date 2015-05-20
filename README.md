@@ -19,7 +19,8 @@ var options = {
     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
   },
-  nameIdentifier: 'foo'
+  nameIdentifier: 'foo',
+  sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa'
 };
 
 var signedAssertion = saml11.create(options);
