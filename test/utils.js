@@ -90,3 +90,9 @@ exports.getSubjectConfirmation = function(assertion) {
   return doc.documentElement
             .getElementsByTagName('saml:getSubjectConfirmation');
 };
+
+exports.getEncryptedData = function(encryptedAssertion) {
+  var doc = new xmldom.DOMParser().parseFromString(encryptedAssertion);
+  return doc.documentElement
+            .getElementsByTagName('xenc:EncryptedData')[0];
+};

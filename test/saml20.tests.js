@@ -144,8 +144,10 @@ describe('saml 2.0', function () {
 
       saml.create(options, function(err, encrypted) {
         if (err) return done(err);
+
+        var encryptedData = utils.getEncryptedData(encrypted);
         
-        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+        xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
           if (err) return done(err);
           var isValid = utils.isValidSignature(decrypted, options.cert);
           assert.equal(true, isValid);
@@ -170,8 +172,10 @@ describe('saml 2.0', function () {
 
       saml.create(options, function(err, encrypted) {
         if (err) return done(err);
+
+        var encryptedData = utils.getEncryptedData(encrypted);
         
-        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+        xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
           if (err) return done(err);
 
           var isValid = utils.isValidSignature(decrypted, options.cert);
