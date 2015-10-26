@@ -264,9 +264,11 @@ it('should override AttirubteStatement NameFormat', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
-      location: {
-        reference: "//*[local-name(.)='Conditions']",
-        action: "after"
+      signatureSettings: {
+        location: {
+          reference: "//*[local-name(.)='Conditions']",
+          action: "after"
+        }
       }
     };
     var signedAssertion = saml11.create(options);

@@ -21,7 +21,14 @@ var options = {
   },
   nameIdentifier: 'foo',
   sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa',
-  prefix: 'ds'
+  signatureSettings: {
+    prefix: 'ds',
+    attrs: {'foo': 'bar'},
+    location: {
+      reference: "//*[local-name(.)='Issuer']",
+      action: 'before'
+    }
+  }
 };
 
 var signedAssertion = saml11.create(options);
