@@ -20,7 +20,8 @@ var options = {
     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
   },
   nameIdentifier: 'foo',
-  sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa'
+  sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa',
+  prefix: 'ds'
 };
 
 var signedAssertion = saml11.create(options);
