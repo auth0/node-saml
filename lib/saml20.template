@@ -1,18 +1,18 @@
-<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="" IssueInstant="">
-  <saml:Issuer></saml:Issuer>
-  <saml:Subject>
-    <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" />
-    <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-      <saml:SubjectConfirmationData />
-    </saml:SubjectConfirmation>
-  </saml:Subject>
-  <saml:Conditions>
-    <saml:AudienceRestriction />
-  </saml:Conditions>
-  <saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
-  <saml:AuthnStatement AuthnInstant="">
-    <saml:AuthnContext>
-      <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef>
-    </saml:AuthnContext>
-  </saml:AuthnStatement>
-</saml:Assertion>
+<saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="" IssueInstant="">
+  <saml2:Issuer></saml2:Issuer>
+  <saml2:Subject>
+    <saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" />
+    <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+      <saml2:SubjectConfirmationData />
+    </saml2:SubjectConfirmation>
+  </saml2:Subject>
+  <saml2:Conditions>
+    <saml2:AudienceRestriction />
+  </saml2:Conditions>
+  <saml2:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+  <saml2:AuthnStatement AuthnInstant="">
+    <saml2:AuthnContext>
+      <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml2:AuthnContextClassRef>
+    </saml2:AuthnContext>
+  </saml2:AuthnStatement>
+</saml2:Assertion>
