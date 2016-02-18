@@ -1,8 +1,8 @@
 <saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="" IssueInstant="">
   <saml2:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName"></saml2:Issuer>
   <saml2:Subject>
-    <saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" />
-    <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+    <saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName" />
+    <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:holder-of-key">
       <saml2:SubjectConfirmationData />
     </saml2:SubjectConfirmation>
   </saml2:Subject>
