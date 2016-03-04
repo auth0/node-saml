@@ -19,7 +19,7 @@
     "moment": "~1.7.2",
     "xml-encryption": "~0.7.4",
     "xpath": "0.0.5",
-    "async": "~0.2.9"
+    "async": "~1.4.2",
   },
   "scripts": {
     "test": "mocha"
