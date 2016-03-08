@@ -83,6 +83,47 @@ describe('saml 2.0', function () {
     assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
     assert.equal('fóo', attributes[2].textContent);
   });
+  
+  it('should set SessionNotOnOrAfter on authnStatement when specified', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      sessionLifetimeInSeconds: 3600
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var authnStatement = utils.getAuthnStatement(signedAssertion);
+    assert.equal(1, authnStatement.length);
+    var authnInstant = authnStatement[0].getAttribute('AuthnInstant');
+    var sessionNotOnOrAfter = authnStatement[0].getAttribute('SessionNotOnOrAfter');
+    should.ok(authnInstant);
+    should.ok(sessionNotOnOrAfter);
+    
+    var lifetime = Math.round((moment(sessionNotOnOrAfter).utc() - moment(authnInstant).utc()) / 1000);
+    assert.equal(3600, lifetime);
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+  });
+  
+  it('should not set SessionNotOnOrAfter on authnStatement when not specified', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var authnStatement = utils.getAuthnStatement(signedAssertion);
+    assert.equal(1, authnStatement.length);
+    var authnInstant = authnStatement[0].getAttribute('AuthnInstant');
+    var sessionNotOnOrAfter = authnStatement[0].hasAttribute('SessionNotOnOrAfter');
+    should.ok(authnInstant);
+    assert.equal(false, sessionNotOnOrAfter);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+  });
 
   it('whole thing with specific authnContextClassRef', function () {
     var options = {
