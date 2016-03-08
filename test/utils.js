@@ -52,6 +52,11 @@ exports.getAuthenticationStatement = function(assertion) {
             .getElementsByTagName('saml:AuthenticationStatement')[0];
 };
 
+exports.getAuthnStatement = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  return doc.documentElement.getElementsByTagName('saml:AuthnStatement');
+};
+
 exports.getAttributes = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement
