@@ -1,6 +1,6 @@
 {
   "name": "saml",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "devDependencies": {
     "mocha": "*",
     "should": "~1.2.1"
@@ -16,7 +16,7 @@
   "dependencies": {
     "xml-crypto": "~0.0.20",
     "xmldom": "=0.1.15",
-    "moment": "~1.7.2",
+    "moment": "~2.14.1",
     "xml-encryption": "~0.7.4",
     "xpath": "0.0.5",
     "async": "~0.2.9"
