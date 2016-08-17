@@ -65,7 +65,9 @@ describe('saml 2.0', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
         'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
         'http://example.org/claims/testaccent': 'fóo', // should supports accents
-        'http://undefinedattribute/ws/com.com': undefined
+        'http://undefinedattribute/ws/com.com': undefined,
+        'http://example.org/claims/booleanprop': true,
+        'http://example.org/claims/numberprop': 1
       }
     };
 
@@ -75,13 +77,22 @@ describe('saml 2.0', function () {
     assert.equal(true, isValid);
 
     var attributes = utils.getAttributes(signedAssertion);
-    assert.equal(3, attributes.length);
+    assert.equal(5, attributes.length);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('xs:string', attributes[0].childNodes[0].getAttribute('xsi:type'));
     assert.equal('foo@bar.com', attributes[0].textContent);
-    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));  
+    assert.equal('xs:string', attributes[1].childNodes[0].getAttribute('xsi:type'));
     assert.equal('Foo Bar', attributes[1].textContent);
     assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('xs:string', attributes[2].childNodes[0].getAttribute('xsi:type'));        
     assert.equal('fóo', attributes[2].textContent);
+    assert.equal('http://example.org/claims/booleanprop', attributes[3].getAttribute('Name'));
+    assert.equal('xs:boolean', attributes[3].childNodes[0].getAttribute('xsi:type'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('http://example.org/claims/numberprop', attributes[4].getAttribute('Name'));
+    assert.equal('xs:long', attributes[4].childNodes[0].getAttribute('xsi:type'));    
+    assert.equal('1', attributes[4].textContent);
   });
 
   it('whole thing with specific authnContextClassRef', function () {
