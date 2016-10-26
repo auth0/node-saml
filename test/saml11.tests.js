@@ -230,22 +230,7 @@ describe('saml 1.1', function () {
     assert.equal('urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', format);
   });
 
-
-it('should override AttirubteStatement NameFormat', function () {
-    var options = {
-      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
-      key: fs.readFileSync(__dirname + '/test-auth0.key'),
-      nameIdentifier: 'foo',
-      nameIdentifierFormat: 'http://foo'
-    };
-    var signedAssertion = saml11.create(options);
-    var format = utils.getNameIdentifier(signedAssertion)
-                              .getAttribute('Format');
-    assert.equal('http://foo', format);
-  });
-
-
-it('should override AttirubteStatement NameFormat', function () {
+  it('should override AttirubteStatement NameFormat', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
@@ -273,8 +258,6 @@ it('should override AttirubteStatement NameFormat', function () {
 
     assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
   });
-
-
 
   it('should test the whole thing', function () {
     var options = {
