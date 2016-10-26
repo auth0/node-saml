@@ -14,12 +14,12 @@
   "author": "Matias Woloski (Auth0)",
   "license": "MIT",
   "dependencies": {
-    "xml-crypto": "~0.0.20",
-    "xmldom": "=0.1.15",
+    "async": "~0.2.9",
     "moment": "~2.14.1",
+    "xml-crypto": "0.8.4",
     "xml-encryption": "~0.7.4",
-    "xpath": "0.0.5",
-    "async": "~0.2.9"
+    "xmldom": "=0.1.15",
+    "xpath": "0.0.5"
   },
   "scripts": {
     "test": "mocha"
