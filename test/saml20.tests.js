@@ -84,6 +84,213 @@ describe('saml 2.0', function () {
     assert.equal('fóo', attributes[2].textContent);
   });
 
+  it('should set attributes with the correct attribute type', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'http://example.org/claims/testaccent': 'fóo', // should supports accents
+        'http://attributes/boolean': true, 
+        'http://attributes/booleanNegative': false, 
+        'http://attributes/number': 123, 
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(6, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('xs:string', attributes[2].firstChild.getAttribute('xsi:type'));
+    assert.equal('fóo', attributes[2].textContent);
+    assert.equal('http://attributes/boolean', attributes[3].getAttribute('Name'));
+    assert.equal('xs:boolean', attributes[3].firstChild.getAttribute('xsi:type'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('http://attributes/booleanNegative', attributes[4].getAttribute('Name'));
+    assert.equal('xs:boolean', attributes[4].firstChild.getAttribute('xsi:type'));
+    assert.equal('false', attributes[4].textContent);
+    assert.equal('http://attributes/number', attributes[5].getAttribute('Name'));
+    assert.equal('xs:double', attributes[5].firstChild.getAttribute('xsi:type'));
+    assert.equal('123', attributes[5].textContent);
+  });
+
+  it('should set attributes with the correct attribute type and NameFormat', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'testaccent': 'fóo', // should supports accents
+        'urn:test:1:2:3': true,
+        '123~oo': 123, 
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(5, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[0].getAttribute('NameFormat'));    
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[1].getAttribute('NameFormat'));    
+    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:basic', attributes[2].getAttribute('NameFormat'));    
+    assert.equal('xs:string', attributes[2].firstChild.getAttribute('xsi:type'));
+    assert.equal('fóo', attributes[2].textContent);
+    assert.equal('urn:test:1:2:3', attributes[3].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[3].getAttribute('NameFormat'));
+    assert.equal('xs:boolean', attributes[3].firstChild.getAttribute('xsi:type'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('123~oo', attributes[4].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified', attributes[4].getAttribute('NameFormat'));    
+    assert.equal('xs:double', attributes[4].firstChild.getAttribute('xsi:type'));
+    assert.equal('123', attributes[4].textContent);
+  });
+
+  it('should set attributes to anytpe when typedAttributes is false', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      typedAttributes: false,
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'http://example.org/claims/testaccent': 'fóo', // should supports accents
+        'http://attributes/boolean': true, 
+        'http://attributes/number': 123, 
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(5, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('xs:anyType', attributes[2].firstChild.getAttribute('xsi:type'));
+    assert.equal('fóo', attributes[2].textContent);
+    assert.equal('http://attributes/boolean', attributes[3].getAttribute('Name'));
+    assert.equal('xs:anyType', attributes[3].firstChild.getAttribute('xsi:type'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('http://attributes/number', attributes[4].getAttribute('Name'));
+    assert.equal('xs:anyType', attributes[4].firstChild.getAttribute('xsi:type'));
+    assert.equal('123', attributes[4].textContent);
+  });
+
+  it('should not set NameFormat in attributes when includeAttributeNameFormat is false', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      typedAttributes: false,
+      includeAttributeNameFormat: false,
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'testaccent': 'fóo', // should supports accents
+        'urn:test:1:2:3': true,
+        '123~oo': 123, 
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(5, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('', attributes[0].getAttribute('NameFormat'));    
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('', attributes[1].getAttribute('NameFormat'));    
+    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('testaccent', attributes[2].getAttribute('Name'));
+    assert.equal('', attributes[2].getAttribute('NameFormat'));    
+    assert.equal('fóo', attributes[2].textContent);
+    assert.equal('urn:test:1:2:3', attributes[3].getAttribute('Name'));
+    assert.equal('', attributes[3].getAttribute('NameFormat'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('123~oo', attributes[4].getAttribute('Name'));
+    assert.equal('', attributes[4].getAttribute('NameFormat'));    
+    assert.equal('123', attributes[4].textContent);
+  });
+
+  it('should ignore undefined attributes in array', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+        'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
+        'arrayAttribute': [ 'foo', undefined, 'bar'],
+        'urn:test:1:2:3': true,
+        '123~oo': 123, 
+        'http://undefinedattribute/ws/com.com': undefined
+      }
+    };
+
+    var signedAssertion = saml.create(options);
+    
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var attributes = utils.getAttributes(signedAssertion);
+    assert.equal(5, attributes.length);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[0].getAttribute('NameFormat'));    
+    assert.equal('foo@bar.com', attributes[0].textContent);
+    assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[1].getAttribute('NameFormat'));    
+    assert.equal('Foo Bar', attributes[1].textContent);
+    assert.equal('arrayAttribute', attributes[2].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:basic', attributes[2].getAttribute('NameFormat'));    
+    assert.equal('xs:string', attributes[2].firstChild.getAttribute('xsi:type'));
+    assert.equal(2, attributes[2].childNodes.length);
+    assert.equal('foo', attributes[2].childNodes[0].textContent);
+    // undefined should not be here
+    assert.equal('bar', attributes[2].childNodes[1].textContent);
+    assert.equal('urn:test:1:2:3', attributes[3].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:uri', attributes[3].getAttribute('NameFormat'));
+    assert.equal('xs:boolean', attributes[3].firstChild.getAttribute('xsi:type'));
+    assert.equal('true', attributes[3].textContent);
+    assert.equal('123~oo', attributes[4].getAttribute('Name'));
+    assert.equal('urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified', attributes[4].getAttribute('NameFormat'));    
+    assert.equal('xs:double', attributes[4].firstChild.getAttribute('xsi:type'));
+    assert.equal('123', attributes[4].textContent);
+  });
+
   it('whole thing with specific authnContextClassRef', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
