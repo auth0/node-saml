@@ -125,7 +125,7 @@ describe('saml 1.1', function () {
 
     var isValid = utils.isValidSignature(signedAssertion, options.cert);
     assert.equal(true, isValid);
-    
+
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(3, attributes.length);
     assert.equal('emailaddress', attributes[0].getAttribute('AttributeName'));
@@ -253,7 +253,7 @@ describe('saml 1.1', function () {
     };
     var signedAssertion = saml11.create(options);
     var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
-    
+
     var signature = doc.documentElement.getElementsByTagName('Signature');
 
     assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
@@ -317,7 +317,7 @@ describe('saml 1.1', function () {
 
       saml11.create(options, function(err, encrypted) {
         if (err) return done(err);
-        
+
         xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
           if (err) return done(err);
           var isValid = utils.isValidSignature(decrypted, options.cert);
@@ -327,7 +327,7 @@ describe('saml 1.1', function () {
       });
     });
 
-    it('should support holder-of-key suject confirmationmethod', function (done) {
+    it('should support holder-of-key subject confirmationmethod', function (done) {
       var options = {
         cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
         key: fs.readFileSync(__dirname + '/test-auth0.key'),
@@ -338,16 +338,47 @@ describe('saml 1.1', function () {
 
       saml11.create(options, function(err, encrypted, proofSecret) {
         if (err) return done(err);
-        
+
         xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
           if (err) return done(err);
-          
+
           var doc = new xmldom.DOMParser().parseFromString(decrypted);
           var subjectConfirmationNodes = doc.documentElement.getElementsByTagName('saml:SubjectConfirmation');
           assert.equal(2, subjectConfirmationNodes.length);
           for (var i=0;i<subjectConfirmationNodes.length;i++) {
             var method = subjectConfirmationNodes[i].getElementsByTagName('saml:ConfirmationMethod')[0];
             assert.equal(method.textContent, 'urn:oasis:names:tc:SAML:1.0:cm:holder-of-key');
+
+            var decryptedProofSecret = xmlenc.decryptKeyInfo(subjectConfirmationNodes[i], options);
+            assert.equal(proofSecret.toString('base64'), decryptedProofSecret.toString('base64'));
+          }
+
+          done();
+        });
+      });
+    });
+
+    it('should support sender-vouches subject confirmationmethod', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+        encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        subjectConfirmationMethod: 'sender-vouches'
+      };
+
+      saml11.create(options, function(err, encrypted, proofSecret) {
+        if (err) return done(err);
+
+        xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+          if (err) return done(err);
+
+          var doc = new xmldom.DOMParser().parseFromString(decrypted);
+          var subjectConfirmationNodes = doc.documentElement.getElementsByTagName('saml:SubjectConfirmation');
+          assert.equal(2, subjectConfirmationNodes.length);
+          for (var i=0;i<subjectConfirmationNodes.length;i++) {
+            var method = subjectConfirmationNodes[i].getElementsByTagName('saml:ConfirmationMethod')[0];
+            assert.equal(method.textContent, 'urn:oasis:names:tc:SAML:1.0:cm:sender-vouches');
 
             var decryptedProofSecret = xmlenc.decryptKeyInfo(subjectConfirmationNodes[i], options);
             assert.equal(proofSecret.toString('base64'), decryptedProofSecret.toString('base64'));
@@ -374,13 +405,13 @@ describe('saml 1.1', function () {
 
       saml11.create(options, function(err, encrypted) {
         if (err) return done(err);
-        
+
         xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
           if (err) return done(err);
 
           var isValid = utils.isValidSignature(decrypted, options.cert);
           assert.equal(true, isValid);
-          
+
           var attributes = utils.getAttributes(decrypted);
           assert.equal(3, attributes.length);
           assert.equal('emailaddress', attributes[0].getAttribute('AttributeName'));
@@ -392,7 +423,7 @@ describe('saml 1.1', function () {
           assert.equal('testaccent', attributes[2].getAttribute('AttributeName'));
           assert.equal('http://example.org/claims', attributes[2].getAttribute('AttributeNamespace'));
           assert.equal('fóo', attributes[2].firstChild.textContent);
-          
+
           done();
         });
       });
