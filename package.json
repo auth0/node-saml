@@ -1,6 +1,6 @@
 {
   "name": "saml",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "devDependencies": {
     "mocha": "*",
     "should": "~1.2.1"
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "async": "~0.2.9",
-    "moment": "~2.14.1",
+    "moment": "2.15.2",
     "valid-url": "~1.0.9",
     "xml-crypto": "0.8.4",
-    "xml-encryption": "~0.7.4",
+    "xml-encryption": "0.11.0",
     "xml-name-validator": "~2.0.1",
     "xmldom": "=0.1.15",
     "xpath": "0.0.5"
