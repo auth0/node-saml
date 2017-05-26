@@ -7,7 +7,6 @@
     </saml:SubjectConfirmation>
   </saml:Subject>
   <saml:Conditions />
-  <saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
   <saml:AuthnStatement AuthnInstant="">
     <saml:AuthnContext>
       <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef>
