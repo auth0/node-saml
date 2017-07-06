@@ -6,9 +6,7 @@
       <saml:SubjectConfirmationData />
     </saml:SubjectConfirmation>
   </saml:Subject>
-  <saml:Conditions>
-    <saml:AudienceRestriction />
-  </saml:Conditions>
+  <saml:Conditions />
   <saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
   <saml:AuthnStatement AuthnInstant="">
     <saml:AuthnContext>
