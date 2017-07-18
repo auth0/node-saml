@@ -465,6 +465,23 @@ describe('saml 2.0', function () {
     assert.equal(audienceRestriction.length, 0);
   });
 
+  it('should not include AttributeStatement when there are no attributes', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      xpathToNodeBeforeSignature: "//*[local-name(.)='Conditions']",
+      signatureNamespacePrefix: 123
+    };
+
+    var signedAssertion = saml.create(options);
+
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+    var attributeStatement = doc.documentElement.getElementsByTagName('saml:AttributeStatement');
+    assert.equal(attributeStatement.length, 0);
+  });
 
   describe('encryption', function () {
 
