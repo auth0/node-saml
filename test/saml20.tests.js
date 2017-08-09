@@ -76,6 +76,7 @@ describe('saml 2.0', function () {
 
     var attributes = utils.getAttributes(signedAssertion);
     assert.equal(3, attributes.length);
+    assert.equal('saml:AttributeStatement', attributes[0].parentNode.nodeName);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
     assert.equal('foo@bar.com', attributes[0].textContent);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
