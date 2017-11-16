@@ -168,7 +168,7 @@ describe('saml 2.0', function () {
     assert.equal('123', attributes[4].textContent);
   });
 
-  it('should set attributes to anytpe when typedAttributes is false', function () {
+  it('should set attributes to anyType when typedAttributes is false', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
       key: fs.readFileSync(__dirname + '/test-auth0.key'),
@@ -439,7 +439,24 @@ describe('saml 2.0', function () {
     var signature = doc.documentElement.getElementsByTagName('Signature');
     assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
   });
+  
+  it('should add SessionNotOnOrAfter when specified', function() {
+    var now = 5000;
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      sessionNotOnOrAfterSeconds: now
+    };
 
+    var signedAssertion = saml.create(options);
+
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
+    var sessionNotOnOrAfter = doc.documentElement.getElementsByTagName('saml:AuthnStatement')[0].getAttribute('SessionNotOnOrAfter');
+    assert.equal(sessionNotOnOrAfter, '1970-01-01T01:23:20.000Z');
+  });
 
   it('should not include AudienceRestriction when there are no audiences', function () {
      var options = {
