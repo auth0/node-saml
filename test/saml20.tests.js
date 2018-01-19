@@ -65,7 +65,9 @@ describe('saml 2.0', function () {
         'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
         'http://example.org/claims/testemptyarray': [], // should dont include empty arrays
         'http://example.org/claims/testaccent': 'fóo', // should supports accents
-        'http://undefinedattribute/ws/com.com': undefined
+        'http://undefinedattribute/ws/com.com': undefined,
+        'urn:oasis:names:tc:xspa:1.0:subject:organization': '<PurposeOfUse xmlns="urn:hl7-org:v3" xsi:type="CE" code="TREATMENT" codeSystem="2.16.840.1.113883.3.18.7.1" codeSystemName="nhin-purpose" displayName="Treatment"/>'
+
       }
     };
 
@@ -74,14 +76,16 @@ describe('saml 2.0', function () {
     var isValid = utils.isValidSignature(signedAssertion, options.cert);
     assert.equal(true, isValid);
 
-    var attributes = utils.getAttributes(signedAssertion);
-    assert.equal(3, attributes.length);
+
+    var attributes = utils.getsaml2Attributes(signedAssertion);
+    assert.equal(4, attributes.length);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
     assert.equal('foo@bar.com', attributes[0].textContent);
     assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
     assert.equal('Foo Bar', attributes[1].textContent);
     assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
     assert.equal('fóo', attributes[2].textContent);
+    assert.equal('PurposeOfUse',attributes[3].firstChild.firstChild.nodeName)
   });
 
   it('whole thing with specific authnContextClassRef', function () {
