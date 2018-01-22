@@ -85,7 +85,7 @@ describe('saml 2.0', function () {
     assert.equal('Foo Bar', attributes[1].textContent);
     assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
     assert.equal('fóo', attributes[2].textContent);
-    assert.equal('PurposeOfUse',attributes[3].firstChild.firstChild.nodeName)
+    assert.equal('PurposeOfUse',attributes[3].firstChild.firstChild.nodeName);
   });
 
   it('whole thing with specific authnContextClassRef', function () {
