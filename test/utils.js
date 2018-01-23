@@ -96,3 +96,9 @@ exports.getEncryptedData = function(encryptedAssertion) {
   return doc.documentElement
             .getElementsByTagName('xenc:EncryptedData')[0];
 };
+
+exports.getsaml2Attributes = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  return doc.documentElement
+            .getElementsByTagName('saml2:Attribute');
+};
