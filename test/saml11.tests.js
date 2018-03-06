@@ -81,6 +81,34 @@ describe('saml 1.1', function () {
     assert.equal(600, lifetime);
   });
 
+  it('should skew the issue instant if requested', function () {
+
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      lifetimeInSeconds: 600,
+      issueInstantSkewInSeconds: 60,
+    };
+
+    var signedAssertion = saml11.create(options);
+    var isValid = utils.isValidSignature(signedAssertion, options.cert);
+    assert.equal(true, isValid);
+
+    var conditions = utils.getConditions(signedAssertion);
+    assert.equal(1, conditions.length);
+    var notBefore = conditions[0].getAttribute('NotBefore');
+    var notOnOrAfter = conditions[0].getAttribute('NotOnOrAfter');
+
+    should.ok(notBefore);
+    should.ok(notOnOrAfter);
+
+    var skew = Math.round((moment.utc() - moment(notBefore).utc()) / 1000);
+    assert.equal(60, skew);
+
+    var lifetime = Math.round((moment(notOnOrAfter).utc() - moment(notBefore).utc()) / 1000);
+    assert.equal(600, lifetime);
+  });
+
   it('should set audience restriction', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
