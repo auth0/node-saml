@@ -1,6 +1,6 @@
 {
   "name": "saml",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "devDependencies": {
     "mocha": "3.5.3",
     "should": "~1.2.1"
