@@ -22,6 +22,16 @@ describe('saml 1.1', function () {
     var isValid = utils.isValidSignature(signedAssertion, options.cert);
     assert.equal(true, isValid);
   });
+  
+  it('should ignore cert if not present', function () {
+    var options = {
+      key: fs.readFileSync(__dirname + '/test-auth0.key')
+    };
+
+    var signedAssertion = saml11.create(options);
+    var isValid = utils.isValidSignature(signedAssertion, fs.readFileSync(__dirname + '/test-auth0.pem'));
+    assert.equal(true, isValid);
+  });
 
   it('should support specifying Issuer property', function () {
     var options = {
