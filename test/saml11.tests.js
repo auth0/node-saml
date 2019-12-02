@@ -29,7 +29,7 @@ describe('saml 1.1', function () {
     };
 
     var signedAssertion = saml11.create(options);
-    var isValid = utils.isValidSignature(signedAssertion, fs.readFileSync(__dirname + '/test-auth0.pem'),);
+    var isValid = utils.isValidSignature(signedAssertion, fs.readFileSync(__dirname + '/test-auth0.pem'));
     assert.equal(true, isValid);
   });
 
