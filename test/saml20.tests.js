@@ -56,6 +56,26 @@ describe('saml 2.0', function () {
     assert.equal('urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified', authnContextClassRef.textContent);
   });
 
+  
+  it('should ignore cert if not present', function () {
+    var options = {
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      issuer: 'urn:issuer',
+      lifetimeInSeconds: 600,
+      audiences: 'urn:myapp',
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+      },
+      nameIdentifier:       'foo',
+      nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified'
+    };
+
+    var signedAssertion = saml.create(options);
+    var isValid = utils.isValidSignature(signedAssertion, fs.readFileSync(__dirname + '/test-auth0.pem'));
+    assert.equal(true, isValid);
+  });
+
   it('should set attributes', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
@@ -439,7 +459,6 @@ describe('saml 2.0', function () {
     var signature = doc.documentElement.getElementsByTagName('Signature');
     assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
   });
-
 
   it('should not include AudienceRestriction when there are no audiences', function () {
      var options = {
