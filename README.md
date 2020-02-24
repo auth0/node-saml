@@ -1,18 +1,20 @@
 Create SAML assertions.
 
-NOTE: currently supports SAML 1.1 tokens
+NOTE: currently supports SAML 1.1 and SAML 2.0 tokens
 
 [![Build Status](https://travis-ci.org/auth0/node-saml.png)](https://travis-ci.org/auth0/node-saml)
 
 ### Usage
 
 ```js
-var saml11 = require('saml').Saml11;
 
 var options = {
+  // Required
   cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
   key: fs.readFileSync(__dirname + '/test-auth0.key'),
+  // Optional
   issuer: 'urn:issuer',
+  issueInstantSkewInSeconds: 60,
   lifetimeInSeconds: 600,
   audiences: 'urn:myapp',
   attributes: {
@@ -23,10 +25,15 @@ var options = {
   sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa'
 };
 
+// SAML 1.1
+var saml11 = require('saml').Saml11;
 var signedAssertion = saml11.create(options);
-```
 
-Everything except the cert and key is optional.
+// SAML 2.0
+var saml20 = require('saml').Saml20;
+var signedAssertion = saml20.create(options);
+
+```
 
 ## Issue Reporting
 
