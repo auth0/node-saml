@@ -9,6 +9,74 @@ var assert = require('assert'),
 
 describe('saml 2.0', function () {
 
+    it('testing all using async and custom signing algo', function () {
+    var options = {
+      cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+      key: fs.readFileSync(__dirname + '/test-auth0.key'),
+      issuer: 'urn:issuer',
+      lifetimeInSeconds: 600,
+      audiences: 'urn:myapp',
+      attributes: {
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+      },
+      nameIdentifier:       'foo',
+      nameIdentifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+      signingFunction: function RSASHA256() {
+        this.getSignature = function(signedInfo, signingKey, callback) {
+          var signer = crypto.createSign("RSA-SHA256")
+          signer.update(signedInfo)
+          var res = signer.sign(signingKey, 'base64')
+          //or do async signing from key server or HSM
+          callback(null, res)
+        }
+
+        this.verifySignature = function(str, key, signatureValue, callback) {
+          var verifier = crypto.createVerify("RSA-SHA256")
+          verifier.update(str)
+          var res = verifier.verify(key, signatureValue, 'base64')
+          //verify async as well
+          callback(null, res)
+        }
+
+        this.getAlgorithmName = function() {
+          return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+        }
+      }
+    };
+
+    saml.create(options, function(err, signedAssertion){
+      var isValid = utils.isValidSignature(signedAssertion, options.cert);
+      assert.equal(true, isValid);
+
+      var nameIdentifier = utils.getNameID(signedAssertion);
+      assert.equal('foo', nameIdentifier.textContent);
+      assert.equal('urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', nameIdentifier.getAttribute('Format'));
+
+      var attributes = utils.getAttributes(signedAssertion);
+      assert.equal(2, attributes.length);
+      assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+      assert.equal('foo@bar.com', attributes[0].textContent);
+      assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+      assert.equal('Foo Bar', attributes[1].textContent);
+
+      assert.equal('urn:issuer', utils.getSaml2Issuer(signedAssertion).textContent);
+
+      var conditions = utils.getConditions(signedAssertion);
+      assert.equal(1, conditions.length);
+      var notBefore = conditions[0].getAttribute('NotBefore');
+      var notOnOrAfter = conditions[0].getAttribute('NotOnOrAfter');
+      should.ok(notBefore);
+      should.ok(notOnOrAfter);
+
+      var lifetime = Math.round((moment(notOnOrAfter).utc() - moment(notBefore).utc()) / 1000);
+      assert.equal(600, lifetime);
+
+      var authnContextClassRef = utils.getAuthnContextClassRef(signedAssertion);
+      assert.equal('urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified', authnContextClassRef.textContent);
+    });
+  });
+
   it('whole thing with default authnContextClassRef', function () {
     var options = {
       cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
