@@ -484,7 +484,7 @@ describe('saml 2.0', function () {
     assert.equal(attributeStatement.length, 0);
   });
 
-  describe('saml 2.0 test full SAML response', function () {
+  describe('saml 2.0 full SAML response', function () {
 
     it('should create a saml 2.0 signed response including plain assertion', function (done) {
       var options = {
