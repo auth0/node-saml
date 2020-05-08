@@ -94,5 +94,11 @@ exports.getSubjectConfirmation = function(assertion) {
 exports.getEncryptedData = function(encryptedAssertion) {
   var doc = new xmldom.DOMParser().parseFromString(encryptedAssertion);
   return doc.documentElement
-            .getElementsByTagName('xenc:EncryptedData')[0];
+            .getElementsByTagName('xenc:EncryptedData')[0];            
 };
+
+exports.getResponseData = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  return doc.getElementsByTagName('samlp:Response')[0];
+};
+
