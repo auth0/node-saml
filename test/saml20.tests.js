@@ -484,6 +484,100 @@ describe('saml 2.0', function () {
     assert.equal(attributeStatement.length, 0);
   });
 
+  describe('saml 2.0 full SAML response', function () {
+
+    it('should create a saml 2.0 signed response including plain assertion', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+        createSignedSamlResponse: true,
+        destination: 'https:/foo.com'
+      };
+
+      var samlResponse = saml.create(options);
+
+      var isValid = utils.isValidSignature(samlResponse, options.cert);
+      assert.equal(true, isValid);                
+
+      done();
+    });    
+
+    it('...with attributes', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+        createSignedSamlResponse: true,
+        destination: 'https:/foo.com',
+        attributes: {
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+          'http://example.org/claims/testaccent': 'fóo', // should supports accents
+          'http://undefinedattribute/ws/com.com': undefined
+        }        
+      };
+
+      var samlResponse = saml.create(options);
+
+      var isValid = utils.isValidSignature(samlResponse, options.cert);
+      assert.equal(true, isValid);  
+      
+      var attributes = utils.getAttributes(samlResponse);
+      assert.equal(3, attributes.length);
+      assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+      assert.equal('foo@bar.com', attributes[0].textContent);
+      assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+      assert.equal('Foo Bar', attributes[1].textContent);
+      assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+      assert.equal('fóo', attributes[2].textContent);      
+
+      done();
+    });
+
+    it('should insure SAML response attribute [ID] matches signature reference attribute [URI]', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+        createSignedSamlResponse: true,
+        destination: 'https:/foo.com'
+      };
+
+      var samlResponse = saml.create(options);
+
+      var isValid = utils.isValidSignature(samlResponse, options.cert);
+      assert.equal(true, isValid);
+      
+      var responseData = utils.getResponseData(samlResponse);
+      var responseId = responseData.getAttribute('ID');
+      var referenceUri = (responseData.getElementsByTagName('Reference')[0].getAttribute('URI')); 
+      assert.equal(referenceUri, '#' + responseId);
+
+      done();
+    });      
+
+    it('should require a [Destination] attribute on SAML Response element', function (done) {
+      var options = {
+        cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+        key: fs.readFileSync(__dirname + '/test-auth0.key'),
+        xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+        createSignedSamlResponse: true,
+        destination: ''
+      };
+
+      try{
+        var samlResponse = saml.create(options);
+      }catch(err){
+        assert(err.message.includes('Expect a SAML Response destination for message to be valid.'));
+        done();
+      }
+
+      throw "Error did not throw as expected!";              
+      done();
+    });
+  });
+
   describe('encryption', function () {
 
     it('should create a saml 2.0 signed and encrypted assertion', function (done) {
@@ -508,7 +602,7 @@ describe('saml 2.0', function () {
       });
     });
 
-    it('should set attributes', function (done) {
+    it('...with assertion attributes', function (done) {
       var options = {
         cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
         key: fs.readFileSync(__dirname + '/test-auth0.key'),
@@ -546,7 +640,77 @@ describe('saml 2.0', function () {
         });
       });
     });
-    
-  });
 
+    describe('encryption full SAML response', function () {
+
+      it('should create a saml 2.0 signed response including encrypted assertion', function (done) {
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key'),
+          encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+          encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+          createSignedSamlResponse: true,
+          destination: 'https:/foo.com'
+        };
+
+        saml.create(options, function(err, encrypted) {
+          if (err) return done(err);
+
+          var isValid = utils.isValidSignature(encrypted, options.cert);
+          assert.equal(true, isValid);
+                  
+          var encryptedData = utils.getEncryptedData(encrypted);
+          
+          xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+            if (err) return done(err);
+
+            done();
+          });
+        });
+      });
+
+      it('...with assertion attributes', function (done) {
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key'),
+          encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+          encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+          createSignedSamlResponse: true,
+          destination: 'https:/foo.com',
+          attributes: {
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+            'http://example.org/claims/testaccent': 'fóo', // should supports accents
+            'http://undefinedattribute/ws/com.com': undefined
+          }
+        };
+
+        saml.create(options, function(err, encrypted) {
+          if (err) return done(err);
+
+          var isValid = utils.isValidSignature(encrypted, options.cert);
+          assert.equal(true, isValid);
+
+          var encryptedData = utils.getEncryptedData(encrypted);
+          
+          xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+            if (err) return done(err);
+
+            var attributes = utils.getAttributes(decrypted);
+            assert.equal(3, attributes.length);
+            assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+            assert.equal('foo@bar.com', attributes[0].textContent);
+            assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+            assert.equal('Foo Bar', attributes[1].textContent);
+            assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+            assert.equal('fóo', attributes[2].textContent);
+
+            done();
+          });
+        });
+      });
+    });
+  });
 });
