@@ -97,8 +97,7 @@ exports.getEncryptedData = function(encryptedAssertion) {
             .getElementsByTagName('xenc:EncryptedData')[0];            
 };
 
-exports.getResponseData = function(assertion) {
-  var doc = new xmldom.DOMParser().parseFromString(assertion);
+exports.getResponseData = function(samlResponse) {
+  var doc = new xmldom.DOMParser().parseFromString(samlResponse);
   return doc.getElementsByTagName('samlp:Response')[0];
 };
-
