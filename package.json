@@ -1,12 +1,12 @@
 {
-  "name": "saml",
+  "name": "@banno/saml",
   "version": "0.15.0",
   "devDependencies": {
     "mocha": "3.5.3",
     "should": "~1.2.1"
   },
   "main": "./lib",
-  "repository": "https://github.com/auth0/node-saml",
+  "repository": "https://github.com/banno/node-saml",
   "keywords": [
     "saml",
     "authentication"
