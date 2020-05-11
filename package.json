@@ -1,6 +1,6 @@
 {
   "name": "@banno/saml",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "devDependencies": {
     "mocha": "3.5.3",
     "should": "~1.2.1"
