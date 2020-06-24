@@ -641,7 +641,7 @@ describe('saml 2.0', function () {
       });
     });
 
-    describe('encryption full SAML response', function () {
+    describe('full signed SAML 2.0 response with encrypted assertion', function () {
 
       it('should create a saml 2.0 signed response including encrypted assertion', function (done) {
         var options = {
@@ -712,5 +712,90 @@ describe('saml 2.0', function () {
         });
       });
     });
+
+    describe('full signed SAML 2.0 response with encryped signed assertion', function () {
+
+      it('should create a saml 2.0 signed response including encrypted signed assertion', function (done) {
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key'),
+          encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+          encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+          createSignedSamlResponse: true,
+          responseSigningLevel: 'AssertionAndResponse',
+          destination: 'https:/foo.com'
+        };
+          var isValid = false;
+          saml.create(options, function(err, responseData) {
+          if (err) return done(err);
+
+          // Response Signature
+          isValid = utils.isValidResponseSignature(responseData, options.cert);
+          assert.equal(true, isValid);
+
+          // Assertion Signature
+          var isValid = utils.isValidSignature(responseData, options.cert);
+          assert.equal(true, isValid);
+                  
+          var encryptedData = utils.getEncryptedData(responseData);
+          
+          xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+            if (err) return done(err);
+          });          
+
+          done();
+        });
+      });
+
+      it('...with assertion attributes', function (done) {
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key'),
+          encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+          encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+          createSignedSamlResponse: true,
+          responseSigningLevel: 'AssertionAndResponse',
+          destination: 'https:/foo.com',
+          attributes: {
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar',
+            'http://example.org/claims/testaccent': 'fóo', // should supports accents
+            'http://undefinedattribute/ws/com.com': undefined
+          }
+        };
+
+        saml.create(options, function(err, responseData) {
+          if (err) return done(err);
+
+          // Response Signature
+          isValid = utils.isValidResponseSignature(responseData, options.cert);
+          assert.equal(true, isValid);
+
+          // Assertion Signature
+          var isValid = utils.isValidSignature(responseData, options.cert);
+          assert.equal(true, isValid);
+                  
+          var encryptedData = utils.getEncryptedData(responseData);
+          
+          xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+            if (err) return done(err);
+
+            var attributes = utils.getAttributes(decrypted);
+            assert.equal(3, attributes.length);
+            assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
+            assert.equal('foo@bar.com', attributes[0].textContent);
+            assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
+            assert.equal('Foo Bar', attributes[1].textContent);
+            assert.equal('http://example.org/claims/testaccent', attributes[2].getAttribute('Name'));
+            assert.equal('fóo', attributes[2].textContent);
+
+            done();
+          });
+        });
+      });
+    });
+
   });
 });

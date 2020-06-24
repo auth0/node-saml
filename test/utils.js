@@ -18,6 +18,24 @@ exports.isValidSignature = function(assertion, cert) {
   return sig.checkSignature(assertion);
 };
 
+exports.isValidResponseSignature = function(response, cert) {
+   var doc = new xmldom.DOMParser().parseFromString(response);
+  var signature = doc.documentElement
+  .getElementsByTagName('Signature')[0]
+
+  var sig = new xmlCrypto.SignedXml(null, { idAttribute: 'ResponseID' });
+  sig.keyInfoProvider = {
+    getKeyInfo: function (key) {
+      return "<X509Data></X509Data>";
+    },
+    getKey: function (keyInfo) {
+      return cert;
+    }
+  };
+  sig.loadSignature(signature.toString());
+  return sig.checkSignature(response);
+};
+
 exports.getIssuer = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement.getAttribute('Issuer');
