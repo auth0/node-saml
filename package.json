@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "~0.2.9",
+    "chai": "^4.2.0",
     "moment": "2.19.3",
     "valid-url": "~1.0.9",
     "xml-crypto": "~1.0.1",

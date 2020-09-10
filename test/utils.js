@@ -1,10 +1,13 @@
-var xmlCrypto = require('xml-crypto'),
-    crypto = require('crypto'),
-    xmldom = require('xmldom');
-    
+var xmlCrypto = require('xml-crypto');
+var xmldom = require('xmldom');
+
+/**
+ * @param {string} assertion
+ * @param {Buffer} cert
+ * @return {boolean}
+ */
 exports.isValidSignature = function(assertion, cert) {
-  var doc = new xmldom.DOMParser().parseFromString(assertion);
-  var signature = xmlCrypto.xpath(doc, "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']")[0];
+  var signature = exports.getXmlSignatures(assertion)[0];
   var sig = new xmlCrypto.SignedXml(null, { idAttribute: 'AssertionID' });
   sig.keyInfoProvider = {
     getKeyInfo: function (key) {
@@ -17,6 +20,17 @@ exports.isValidSignature = function(assertion, cert) {
   sig.loadSignature(signature.toString());
   return sig.checkSignature(assertion);
 };
+
+/**
+ * @param {string} assertion
+ * @return {Element[]}
+ */
+exports.getXmlSignatures = function(assertion) {
+  var doc = new xmldom.DOMParser().parseFromString(assertion);
+  var signatures = xmlCrypto.xpath(doc, "/*/*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']");
+
+  return signatures;
+}
 
 exports.getIssuer = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
