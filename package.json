@@ -2,8 +2,12 @@
   "name": "saml",
   "version": "0.14.0",
   "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "husky": "^4.3.0",
     "mocha": "3.5.3",
-    "should": "~1.2.1"
+    "should": "~1.2.1",
+    "standard-version": "^9.0.0"
   },
   "main": "./lib",
   "repository": "https://github.com/auth0/node-saml",
@@ -24,6 +28,12 @@
     "xpath": "0.0.5"
   },
   "scripts": {
+    "release": "standard-version",
     "test": "mocha"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
