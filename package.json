@@ -4,6 +4,7 @@
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
+    "chai": "^4.2.0",
     "husky": "^4.3.0",
     "mocha": "3.5.3",
     "should": "~1.2.1",
@@ -19,7 +20,6 @@
   "license": "MIT",
   "dependencies": {
     "async": "~0.2.9",
-    "chai": "^4.2.0",
     "moment": "2.19.3",
     "valid-url": "~1.0.9",
     "xml-crypto": "~1.0.1",
