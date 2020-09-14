@@ -27,7 +27,10 @@ describe('saml 2.0', function () {
     })
   });
 
-  function saml20TestSuite({ createAssertion, assertSignature }) {
+  function saml20TestSuite(options) {
+    var createAssertion = options.createAssertion;
+    var assertSignature = options.assertSignature;
+
     describe('#' + createAssertion, function () {
       it('whole thing with default authnContextClassRef', function () {
         var options = {
