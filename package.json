@@ -1,6 +1,6 @@
 {
   "name": "saml",
-  "version": "0.15.0-rc.0",
+  "version": "0.15.0",
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
