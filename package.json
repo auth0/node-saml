@@ -2,11 +2,11 @@
   "name": "saml",
   "version": "0.15.0",
   "devDependencies": {
-    "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^9.1.2",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "chai": "^4.2.0",
     "husky": "^4.3.0",
-    "mocha": "3.5.3",
+    "mocha": "^8.2.0",
     "should": "~1.2.1",
     "standard-version": "^9.0.0"
   },
@@ -23,7 +23,7 @@
     "moment": "2.19.3",
     "valid-url": "~1.0.9",
     "xml-crypto": "~1.0.1",
-    "xml-encryption": "0.11.2",
+    "xml-encryption": "^1.2.1",
     "xml-name-validator": "~2.0.1",
     "xmldom": "=0.1.15",
     "xpath": "0.0.5"
