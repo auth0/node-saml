@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/auth0/node-saml/compare/v0.15.0...v1.0.0) (2020-11-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* update xml-crypto and xmldom dependencies to fix sec issues
+* stop supporting node v4 and v8
+* xml-encryption major version bump, fix typo in config property
+from `keyEncryptionAlgorighm` to `keyEncryptionAlgorithm` consumed by
+new xml-encryption library version.
+
+### Features
+
+* fix sec issues with dependencies ([06acc02](https://github.com/auth0/node-saml/commit/06acc0238d7161c123f2f6924aa9f5984a5a2f32))
+* update xml-crypto and xmldom dependencies to fix sec issues ([772c30e](https://github.com/auth0/node-saml/commit/772c30e4333d0af0e783c163e371c49ec0386c23))
+
+
+* remove node v4 and v8 in travis configuration ([d8c62af](https://github.com/auth0/node-saml/commit/d8c62af972e6c6edbc052fafed749b254e73569c))
+
 ## [0.15.0](https://github.com/auth0/node-saml/compare/v0.13.0...v0.15.0) (2020-10-01)
 
 
