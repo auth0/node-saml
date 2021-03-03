@@ -8,6 +8,9 @@ var xmlenc = require('xml-encryption');
 var utils = require('./utils');
 var saml11 = require('../lib/saml11');
 
+var EncryptXml = require('../lib/xml/encrypt');
+var SignXml = require('../lib/xml/sign');
+
 describe('saml 1.1', function () {
 
   saml11TestSuite({
@@ -345,6 +348,39 @@ describe('saml 1.1', function () {
               done();
             });
           });
+        });
+
+        it('should create a saml 1.1 encrypted assertion using async strategy', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+          };
+
+          var strategies = {
+            signXml: SignXml.fromSignXmlOptions(Object.assign({
+              xpathToNodeBeforeSignature: "//*[local-name(.)='AuthenticationStatement']",
+              signatureIdAttribute: 'AssertionID'
+            }, options)),
+            encryptXml: EncryptXml.fromEncryptXmlOptions(options)
+          }
+
+          var callback = function(err, encrypted) {
+            if (err) return done(err);
+
+            xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          }
+
+          if (createAssertion === 'create'){
+            saml11[createAssertion](options, strategies, callback);
+          } else {
+            saml11[createAssertion](options, callback);
+          }
         });
 
         it('should support holder-of-key suject confirmationmethod', function (done) {
