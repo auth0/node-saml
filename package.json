@@ -2,12 +2,12 @@
   "name": "saml",
   "version": "1.0.0",
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
     "chai": "^4.2.0",
-    "husky": "^4.3.0",
-    "mocha": "^8.2.0",
-    "should": "~1.2.1",
+    "husky": "^6.0.0",
+    "mocha": "^9.0.0",
+    "should": "^13.2.3",
     "standard-version": "^9.0.0"
   },
   "main": "./lib",
@@ -19,14 +19,14 @@
   "author": "Matias Woloski (Auth0)",
   "license": "MIT",
   "dependencies": {
-    "async": "~0.2.9",
-    "moment": "2.19.3",
+    "async": "^3.2.0",
+    "moment": "^2.29.1",
     "valid-url": "~1.0.9",
-    "xml-crypto": "2.0.0",
+    "xml-crypto": "^2.1.2",
     "xml-encryption": "^1.2.1",
-    "xml-name-validator": "~2.0.1",
-    "xmldom": "0.1.17",
-    "xpath": "0.0.5"
+    "xml-name-validator": "^3.0.0",
+    "xmldom": "^0.6.0",
+    "xpath": "0.0.32"
   },
   "scripts": {
     "release": "standard-version",
