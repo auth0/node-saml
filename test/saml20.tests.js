@@ -3,7 +3,7 @@ var fs = require('fs');
 var utils = require('./utils');
 var moment = require('moment');
 var should = require('should');
-var xmldom = require('xmldom');
+var xmldom = require('@xmldom/xmldom');
 var xmlenc = require('xml-encryption');
 
 var saml = require('../lib/saml20');
