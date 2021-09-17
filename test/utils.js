@@ -1,5 +1,5 @@
 var xmlCrypto = require('xml-crypto');
-var xmldom = require('xmldom');
+var xmldom = require('@xmldom/xmldom');
 
 /**
  * @param {string} assertion

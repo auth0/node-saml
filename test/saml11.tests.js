@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var fs = require('fs');
 var moment = require('moment');
 var should = require('should');
-var xmldom = require('xmldom');
+var xmldom = require('@xmldom/xmldom');
 var xmlenc = require('xml-encryption');
 
 var utils = require('./utils');
@@ -27,7 +27,7 @@ describe('saml 1.1', function () {
       it: it.skip
     })
   });
-  
+
   function saml11TestSuite(options) {
     var createAssertion = options.createAssertion;
     var assertSignature = options.assertSignature;
