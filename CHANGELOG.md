@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/auth0/node-saml/compare/v1.0.0...v1.0.1) (2021-09-17)
+
+
+### Bug Fixes
+
+* update xmldom and xml-crypto to fix security issues ([6ad0243](https://github.com/auth0/node-saml/commit/6ad0243fe8c2f90d71d335500e9a9c8a2c436cb7))
+
 ## [1.0.0](https://github.com/auth0/node-saml/compare/v0.15.0...v1.0.0) (2020-11-04)
 
 
