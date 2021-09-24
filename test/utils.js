@@ -47,6 +47,10 @@ exports.getIssueInstant = function(assertion) {
   return doc.documentElement.getAttribute('IssueInstant');
 };
 
+exports.getAuthenticationInstant = function (assertion) {
+  return exports.getAuthenticationStatement(assertion).getAttribute('AuthenticationInstant');
+};
+
 exports.getConditions = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement.getElementsByTagName('saml:Conditions');
