@@ -4,6 +4,10 @@ Create SAML assertions. Supports SAML 1.1 and SAML 2.0 tokens.
 
 [![Build Status](https://travis-ci.org/auth0/node-saml.png)](https://travis-ci.org/auth0/node-saml)
 
+### Supported Node Versions
+
+node >= 12
+
 ### Usage
 
 ```js
