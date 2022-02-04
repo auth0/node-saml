@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/auth0/node-saml/compare/v1.0.1...v2.0.0) (2022-02-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* Requires NodeJS >= 12
+
+Upgraded the xml-encryption package which removes the vulnerable node-forge dependency
+See https://github.com/advisories/GHSA-8fr3-hfg3-gpgp
+
+### Bug Fixes
+
+* remove vulnerable node-forge dependency ([0106c61](https://github.com/auth0/node-saml/commit/0106c611a1263150e42692411aeeea0c95ec0755))
+
 ### [1.0.1](https://github.com/auth0/node-saml/compare/v1.0.0...v1.0.1) (2021-09-17)
 
 
