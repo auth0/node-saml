@@ -95,10 +95,13 @@ describe('saml 1.1', function () {
         var signedAssertion = saml11[createAssertion](options);
         var conditions = utils.getConditions(signedAssertion);
         assert.equal(1, conditions.length);
+        var authenticationInstant = utils.getAuthenticationInstant(signedAssertion);
         var notBefore = conditions[0].getAttribute('NotBefore');
         var notOnOrAfter = conditions[0].getAttribute('NotOnOrAfter');
+
         should.ok(notBefore);
         should.ok(notOnOrAfter);
+        should.equal(authenticationInstant, notBefore);
 
         var lifetime = Math.round((moment(notOnOrAfter).utc() - moment(notBefore).utc()) / 1000);
         assert.equal(600, lifetime);
