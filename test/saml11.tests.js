@@ -46,6 +46,32 @@ describe('saml 1.1', function () {
         assertSignature(signedAssertion, options);
       });
 
+      it('should not error when cert is missing newlines', function () {
+        // cert created with:
+        // openssl req -x509 -new -newkey rsa:2048 -nodes -subj '/CN=auth0.auth0.com/O=Auth0 LLC/C=US/ST=Washington/L=Redmond' -keyout auth0.key -out auth0.pem
+
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key')
+        };
+
+        var signedAssertion = saml11[createAssertion]({...options, cert: Buffer.from(options.cert.toString().replaceAll(/[\r\n]/g, ''))});
+        assertSignature(signedAssertion, options);
+      });
+
+      it('should not error when key is missing newlines', function () {
+        // cert created with:
+        // openssl req -x509 -new -newkey rsa:2048 -nodes -subj '/CN=auth0.auth0.com/O=Auth0 LLC/C=US/ST=Washington/L=Redmond' -keyout auth0.key -out auth0.pem
+
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key')
+        };
+
+        var signedAssertion = saml11[createAssertion]({...options, key: Buffer.from(options.key.toString().replaceAll(/[\r\n]/g, ''))});
+        assertSignature(signedAssertion, options);
+      });
+
       it('should support specifying Issuer property', function () {
         var options = {
           cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
