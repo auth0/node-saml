@@ -24,6 +24,20 @@ describe("fixPemFormatting", () => {
         assert.deepStrictEqual(createPublicKey(originalCert), createPublicKey(standardizedCert));
 	})
 
+    it("handles PEM content with extra data before the cert", () => {
+        let originalCert = Buffer.from(`data that should be ignored\n${fs.readFileSync(__dirname + '/test-auth0_rsa.pub').toString()}`)
+        let standardizedCert = utils.fixPemFormatting(originalCert);
+        assert.notStrictEqual(originalCert, standardizedCert);
+        assert.deepStrictEqual(createPublicKey(originalCert), createPublicKey(standardizedCert));
+    })
+
+    it("handles PEM content with extra data after the cert", () => {
+        let originalCert = Buffer.from(`${fs.readFileSync(__dirname + '/test-auth0_rsa.pub').toString()}\ndata that should be ignored`)
+        let standardizedCert = utils.fixPemFormatting(originalCert);
+        assert.notStrictEqual(originalCert, standardizedCert);
+        assert.deepStrictEqual(createPublicKey(originalCert), createPublicKey(standardizedCert));
+    })
+
     it("handles incorrectly formatted PEM content", () => {
         let originalCert = Buffer.from(fs.readFileSync(__dirname + '/test-auth0_rsa.pub').toString().replaceAll(/[\r\n]/g, ''));
         let standardizedCert = utils.fixPemFormatting(originalCert);
