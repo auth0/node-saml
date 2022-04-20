@@ -376,6 +376,44 @@ describe('saml 1.1', function () {
           });
         });
 
+        it('should not error when encryptionPublicKey is missing newlines', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: Buffer.from(fs.readFileSync(__dirname + '/test-auth0_rsa.pub').toString().replaceAll(/[\r\n]/g, '')),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+          };
+
+          saml11[createAssertion](options, function(err, encrypted) {
+            if (err) return done(err);
+
+            xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          });
+        });
+
+        it('should not error when encryptionCert is missing newlines', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: Buffer.from(fs.readFileSync(__dirname + '/test-auth0.pem').toString().replaceAll(/[\r\n]/g, ''))
+          };
+
+          saml11[createAssertion](options, function(err, encrypted) {
+            if (err) return done(err);
+
+            xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          });
+        });
+
         it('should support holder-of-key suject confirmationmethod', function (done) {
           var options = {
             cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
