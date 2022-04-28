@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var fs = require('fs');
 var moment = require('moment');
 var should = require('should');
-var xmldom = require('xmldom');
+var xmldom = require('@xmldom/xmldom');
 var xmlenc = require('xml-encryption');
 
 var utils = require('./utils');
@@ -30,7 +30,7 @@ describe('saml 1.1', function () {
       it: it.skip
     })
   });
-  
+
   function saml11TestSuite(options) {
     var createAssertion = options.createAssertion;
     var assertSignature = options.assertSignature;
@@ -46,6 +46,32 @@ describe('saml 1.1', function () {
         };
 
         var signedAssertion = saml11[createAssertion](options);
+        assertSignature(signedAssertion, options);
+      });
+
+      it('should not error when cert is missing newlines', function () {
+        // cert created with:
+        // openssl req -x509 -new -newkey rsa:2048 -nodes -subj '/CN=auth0.auth0.com/O=Auth0 LLC/C=US/ST=Washington/L=Redmond' -keyout auth0.key -out auth0.pem
+
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key')
+        };
+
+        var signedAssertion = saml11[createAssertion]({...options, cert: Buffer.from(options.cert.toString().replaceAll(/[\r\n]/g, ''))});
+        assertSignature(signedAssertion, options);
+      });
+
+      it('should not error when key is missing newlines', function () {
+        // cert created with:
+        // openssl req -x509 -new -newkey rsa:2048 -nodes -subj '/CN=auth0.auth0.com/O=Auth0 LLC/C=US/ST=Washington/L=Redmond' -keyout auth0.key -out auth0.pem
+
+        var options = {
+          cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          key: fs.readFileSync(__dirname + '/test-auth0.key')
+        };
+
+        var signedAssertion = saml11[createAssertion]({...options, key: Buffer.from(options.key.toString().replaceAll(/[\r\n]/g, ''))});
         assertSignature(signedAssertion, options);
       });
 
@@ -98,10 +124,13 @@ describe('saml 1.1', function () {
         var signedAssertion = saml11[createAssertion](options);
         var conditions = utils.getConditions(signedAssertion);
         assert.equal(1, conditions.length);
+        var authenticationInstant = utils.getAuthenticationInstant(signedAssertion);
         var notBefore = conditions[0].getAttribute('NotBefore');
         var notOnOrAfter = conditions[0].getAttribute('NotOnOrAfter');
+
         should.ok(notBefore);
         should.ok(notOnOrAfter);
+        should.equal(authenticationInstant, notBefore);
 
         var lifetime = Math.round((moment(notOnOrAfter).utc() - moment(notBefore).utc()) / 1000);
         assert.equal(600, lifetime);
@@ -381,6 +410,44 @@ describe('saml 1.1', function () {
           } else {
             saml11[createAssertion](options, callback);
           }
+        });
+
+        it('should not error when encryptionPublicKey is missing newlines', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: Buffer.from(fs.readFileSync(__dirname + '/test-auth0_rsa.pub').toString().replaceAll(/[\r\n]/g, '')),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+          };
+
+          saml11[createAssertion](options, function(err, encrypted) {
+            if (err) return done(err);
+
+            xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          });
+        });
+
+        it('should not error when encryptionCert is missing newlines', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: Buffer.from(fs.readFileSync(__dirname + '/test-auth0.pem').toString().replaceAll(/[\r\n]/g, ''))
+          };
+
+          saml11[createAssertion](options, function(err, encrypted) {
+            if (err) return done(err);
+
+            xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          });
         });
 
         it('should support holder-of-key suject confirmationmethod', function (done) {

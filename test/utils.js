@@ -1,5 +1,5 @@
 var xmlCrypto = require('xml-crypto');
-var xmldom = require('xmldom');
+var xmldom = require('@xmldom/xmldom');
 
 /**
  * @param {string} assertion
@@ -45,6 +45,10 @@ exports.getAssertionID = function(assertion) {
 exports.getIssueInstant = function(assertion) {
   var doc = new xmldom.DOMParser().parseFromString(assertion);
   return doc.documentElement.getAttribute('IssueInstant');
+};
+
+exports.getAuthenticationInstant = function (assertion) {
+  return exports.getAuthenticationStatement(assertion).getAttribute('AuthenticationInstant');
 };
 
 exports.getConditions = function(assertion) {

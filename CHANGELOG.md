@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/auth0/node-saml/compare/v2.0.0...v2.0.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* **saml11:** do not mutate moment() when options.lifetimeInSeconds is provided ([0a5afd1](https://github.com/auth0/node-saml/commit/0a5afd1977dc832f1cc51de6af7c801cc95f78b5))
+
+## [2.0.0](https://github.com/auth0/node-saml/compare/v1.0.1...v2.0.0) (2022-02-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* Requires NodeJS >= 12
+
+Upgraded the xml-encryption package which removes the vulnerable node-forge dependency
+See https://github.com/advisories/GHSA-8fr3-hfg3-gpgp
+
+### Bug Fixes
+
+* remove vulnerable node-forge dependency ([0106c61](https://github.com/auth0/node-saml/commit/0106c611a1263150e42692411aeeea0c95ec0755))
+
+### [1.0.1](https://github.com/auth0/node-saml/compare/v1.0.0...v1.0.1) (2021-09-17)
+
+
+### Bug Fixes
+
+* update xmldom and xml-crypto to fix security issues ([6ad0243](https://github.com/auth0/node-saml/commit/6ad0243fe8c2f90d71d335500e9a9c8a2c436cb7))
+
 ## [1.0.0](https://github.com/auth0/node-saml/compare/v0.15.0...v1.0.0) (2020-11-04)
 
 
