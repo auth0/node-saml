@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/auth0/node-saml/compare/v2.0.1...v3.0.0) (2022-05-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* handle poorly formatted PEM files (#85)
+
+### Bug Fixes
+
+* handle poorly formatted PEM files ([#85](https://github.com/auth0/node-saml/issues/85)) ([8830a23](https://github.com/auth0/node-saml/commit/8830a238d33e2e198acd81fb6d972583848bfe26))
+
 ### [2.0.1](https://github.com/auth0/node-saml/compare/v2.0.0...v2.0.1) (2022-02-09)
 
 
