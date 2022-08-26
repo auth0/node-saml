@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/auth0/node-saml/compare/v3.0.0...v3.0.1) (2022-08-26)
+
+
+### Bug Fixes
+
+* update async and moment dependencies to fix reported CVEs ([663a73e](https://github.com/auth0/node-saml/commit/663a73ef4f933c5b264ab0ba3b69fd35039eab64))
+
 ## [3.0.0](https://github.com/auth0/node-saml/compare/v2.0.1...v3.0.0) (2022-05-12)
 
 
