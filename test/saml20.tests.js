@@ -7,6 +7,8 @@ var xmldom = require('@xmldom/xmldom');
 var xmlenc = require('xml-encryption');
 
 var saml = require('../lib/saml20');
+var EncryptXml = require('../lib/xml/encrypt');
+var SignXml = require('../lib/xml/sign');
 
 describe('saml 2.0', function () {
   saml20TestSuite({
@@ -601,6 +603,40 @@ describe('saml 2.0', function () {
               done();
             });
           });
+        });
+
+        it('should create a saml 2.0 signed and encrypted assertion with async strategy', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem')
+          };
+
+          var strategies = {
+            signXml: SignXml.fromSignXmlOptions(Object.assign({
+              xpathToNodeBeforeSignature: "//*[local-name(.)='Issuer']",
+              signatureIdAttribute: 'ID'
+            }, options)),
+            encryptXml: EncryptXml.fromEncryptXmlOptions(options)
+          }
+
+          var callback = function(err, encrypted){
+            if (err) return done(err);
+            var encryptedData = utils.getEncryptedData(encrypted);
+
+            xmlenc.decrypt(encryptedData.toString(), { key: fs.readFileSync(__dirname + '/test-auth0.key') }, function (err, decrypted) {
+              if (err) return done(err);
+              assertSignature(decrypted, options);
+              done();
+            });
+          }
+
+          if (createAssertion === 'create'){
+            saml[createAssertion](options, strategies, callback)
+          } else {
+            saml[createAssertion](options, callback)
+          }
         });
 
         it('should not error when encryptionPublicKey is missing newline', function (done) {
