@@ -10,10 +10,12 @@ node >= 12
 
 ### Usage
 
-```js
-var saml = require('saml').Saml20; // or Saml11
+#### Signed Assertions
 
-var options = {
+```js
+const saml = require('saml').Saml20; // or Saml11
+
+const options = {
   cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
   key: fs.readFileSync(__dirname + '/test-auth0.key'),
   issuer: 'urn:issuer',
@@ -27,10 +29,50 @@ var options = {
   sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa'
 };
 
-var signedAssertion = saml.create(options);
+let samlAssertion = saml.create(options)
+
+// OR with callbacks
+
+saml.create(options, (err, samlAssertion) => {
+  if (err) { throw new Error(err) }
+  console.log(samlAssertion)
+})
 ```
 
-Everything except the cert and key is optional.
+All options except of the cert and key are optional. The function can be invoked
+either synchronously or with callbacks, however if the `encryptionCert` option
+has been passed in, the syncronous invocation is not possible
+
+#### Unsigned Assertions
+
+```js
+const saml = require('saml').Saml20; // or Saml11
+
+const options = {
+  issuer: 'urn:issuer',
+  lifetimeInSeconds: 600,
+  audiences: 'urn:myapp',
+  attributes: {
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'foo@bar.com',
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'Foo Bar'
+  },
+  nameIdentifier: 'foo',
+  sessionIndex: '_faed468a-15a0-4668-aed6-3d9c478cc8fa'
+};
+
+let samlAssertion = saml.createUnsignedAssertion(options)
+
+// OR with callbacks
+
+saml.createUnsignedAssertion(options, (err, samlAssertion) => {
+  if (err) { throw new Error(err) }
+  console.log(samlAssertion)
+})
+```
+
+All options are optional. The function can be invoked
+either synchronously or with callbacks, however if the `encryptionCert` option
+has been passed in, the syncronous invocation is not possible
 
 ## Issue Reporting
 
