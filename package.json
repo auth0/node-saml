@@ -22,7 +22,7 @@
   "author": "Matias Woloski (Auth0)",
   "license": "MIT",
   "dependencies": {
-    "@xmldom/xmldom": "^0.7.4",
+    "@xmldom/xmldom": "^0.8.10",
     "async": "^3.2.4",
     "moment": "^2.29.4",
     "valid-url": "~1.0.9",
