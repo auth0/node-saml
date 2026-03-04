@@ -5,13 +5,14 @@
     "node": ">=12"
   },
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-conventional": "^11.0.0",
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "@semantic-release/exec": "^7.0.3",
     "chai": "^4.2.0",
-    "husky": "^4.3.0",
+    "husky": "^9.1.7",
     "mocha": "^8.2.0",
-    "should": "~1.2.1",
-    "standard-version": "^9.0.0"
+    "semantic-release": "^25.0.2",
+    "should": "~1.2.1"
   },
   "main": "./lib",
   "repository": "https://github.com/auth0/node-saml",
@@ -32,12 +33,7 @@
     "xpath": "0.0.5"
   },
   "scripts": {
-    "release": "standard-version",
+    "prepare": "husky",
     "test": "mocha"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   }
 }
