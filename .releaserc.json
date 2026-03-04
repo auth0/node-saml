@@ -1,0 +1,24 @@
+{
+  "branches": [
+    "master"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": true,
+        "pkgRoot": "."
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "verifyReleaseCmd": "ARTIFACT=$(npm pack --ignore-scripts | tail -1) && rl-wrapper --artifact \"$ARTIFACT\" --name node-saml --version ${nextRelease.version} --repository $GITHUB_REPOSITORY --commit $GITHUB_SHA --build-env github_actions --suppress_output",
+        "prepareCmd": "git diff --exit-code"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
