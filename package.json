@@ -14,6 +14,9 @@
     "semantic-release": "^25.0.2",
     "should": "~1.2.1"
   },
+  "files": [
+    "lib"
+  ],
   "main": "./lib",
   "repository": "https://github.com/auth0/node-saml",
   "keywords": [
