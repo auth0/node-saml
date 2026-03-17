@@ -15,7 +15,7 @@
     [
       "@semantic-release/exec",
       {
-        "verifyReleaseCmd": "ARTIFACT=$(npm pack --ignore-scripts | tail -1) && rl-wrapper --artifact \"$ARTIFACT\" --name node-saml --version ${nextRelease.version} --repository $GITHUB_REPOSITORY --commit $GITHUB_SHA --build-env github_actions --suppress_output",
+        "verifyReleaseCmd": "ARTIFACT=\"$(pwd)/$(npm pack --ignore-scripts | tail -1)\" && rl-wrapper --artifact \"$ARTIFACT\" --name node-saml --version ${nextRelease.version} --repository $GITHUB_REPOSITORY --commit $GITHUB_SHA --build-env github_actions --suppress-output",
         "prepareCmd": "git diff --exit-code"
       }
     ],
