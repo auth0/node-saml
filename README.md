@@ -32,6 +32,29 @@ var signedAssertion = saml.create(options);
 
 Everything except the cert and key is optional.
 
+### Encryption
+
+SAML assertions can optionally be encrypted, by providing a certificate and public key, as follows:
+
+```js
+var saml = require('saml').Saml20; // or Saml11
+
+var options = {
+  cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+  key: fs.readFileSync(__dirname + '/test-auth0.key'),
+  nameIdentifier: 'foo',
+  encryptionPublicKey: fs.readFileSync(__dirname + '/encryption-key.pub'),
+  encryptionCert: fs.readFileSync(__dirname + '/encryption-cert.pem'),
+  encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc', // Defaults to http://www.w3.org/2009/xmlenc11#aes256-gcm if not specified
+  disallowEncryptionWithInsecureAlgorithm: true,
+  warnOnInsecureEncryptionAlgorithm: true
+}
+```
+
+See [node-xml-encryption](https://github.com/auth0/node-xml-encryption) for documentation on the allowed algorithms. If using algorithms treated as insecure by [node-xml-encryption](https://github.com/auth0/node-xml-encryption), you must provide disallowEncryptionWithInsecureAlgorithm option set to false.
+A warning will be piped to `stderr` using console.warn() by default when the insecure algorithms are used and above mentioned flag is false. This can be disabled via the `warnOnInsecureEncryptionAlgorithm` flag.
+
+
 ## Issue Reporting
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
