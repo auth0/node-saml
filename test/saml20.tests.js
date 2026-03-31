@@ -5,6 +5,7 @@ var moment = require('moment');
 var should = require('should');
 var xmldom = require('@xmldom/xmldom');
 var xmlenc = require('xml-encryption');
+var sinon = require('sinon');
 
 var saml = require('../lib/saml20');
 
@@ -581,6 +582,14 @@ describe('saml 2.0', function () {
       });
 
       describe('encryption', function () {
+        let consoleSpy = null;
+        beforeEach(function() {
+          consoleSpy = sinon.spy(console, 'warn');
+        });
+
+        afterEach(function() {
+          consoleSpy.restore();
+        });
 
         it('should create a saml 2.0 signed and encrypted assertion', function (done) {
           var options = {
@@ -682,6 +691,61 @@ describe('saml 2.0', function () {
             });
           });
         });
+
+        it('should use aes256-gcm as the default encryption algorithm', function (done) { 
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+          };
+
+          saml[createAssertion](options, function (err, encrypted) {
+            if (err) return done(err);
+            var encryptedData = utils.getEncryptedData(encrypted);
+            var encryptionMethod = encryptedData.getElementsByTagName('xenc:EncryptionMethod')[0];
+            assert.equal('http://www.w3.org/2009/xmlenc11#aes256-gcm', encryptionMethod.getAttribute('Algorithm'));
+            done();
+          })
+        });
+
+        it('should allow aes256-cbc when disallowEncryptionWithInsecureAlgorithm is false', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+            disallowEncryptionWithInsecureAlgorithm: false,
+            warnOnInsecureEncryptionAlgorithm: true,
+          };
+
+          saml[createAssertion](options, function (err, encrypted) {
+            if (err) return done(err);
+            var encryptedData = utils.getEncryptedData(encrypted);
+            var encryptionMethod = encryptedData.getElementsByTagName('xenc:EncryptionMethod')[0];
+            assert.equal('http://www.w3.org/2001/04/xmlenc#aes256-cbc', encryptionMethod.getAttribute('Algorithm'));
+            assert.equal(consoleSpy.called, true);
+            done();
+          });
+        });
+
+        it('should not allow aes256-cbc when disallowEncryptionWithInsecureAlgorithm is true', function (done) {
+          var options = {
+            cert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            key: fs.readFileSync(__dirname + '/test-auth0.key'),
+            encryptionPublicKey: fs.readFileSync(__dirname + '/test-auth0_rsa.pub'),
+            encryptionCert: fs.readFileSync(__dirname + '/test-auth0.pem'),
+            encryptionAlgorithm: 'http://www.w3.org/2001/04/xmlenc#aes256-cbc',
+            disallowEncryptionWithInsecureAlgorithm: true
+          };
+
+          saml[createAssertion](options, function (err, encrypted) {
+            assert.ok(err);
+            done();
+          });
+        });
+
       });
     });
   }
