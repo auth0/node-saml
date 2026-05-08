@@ -337,19 +337,19 @@ describe('saml 2.0', function () {
         var attributes = utils.getAttributes(signedAssertion);
         assert.equal(5, attributes.length);
         assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', attributes[0].getAttribute('Name'));
-        assert.equal('', attributes[0].getAttribute('NameFormat'));
+        assert.equal(null, attributes[0].getAttribute('NameFormat'));
         assert.equal('foo@bar.com', attributes[0].textContent);
         assert.equal('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', attributes[1].getAttribute('Name'));
-        assert.equal('', attributes[1].getAttribute('NameFormat'));
+        assert.equal(null, attributes[1].getAttribute('NameFormat'));
         assert.equal('Foo Bar', attributes[1].textContent);
         assert.equal('testaccent', attributes[2].getAttribute('Name'));
-        assert.equal('', attributes[2].getAttribute('NameFormat'));
+        assert.equal(null, attributes[2].getAttribute('NameFormat'));
         assert.equal('fóo', attributes[2].textContent);
         assert.equal('urn:test:1:2:3', attributes[3].getAttribute('Name'));
-        assert.equal('', attributes[3].getAttribute('NameFormat'));
+        assert.equal(null, attributes[3].getAttribute('NameFormat'));
         assert.equal('true', attributes[3].textContent);
         assert.equal('123~oo', attributes[4].getAttribute('Name'));
-        assert.equal('', attributes[4].getAttribute('NameFormat'));
+        assert.equal(null, attributes[4].getAttribute('NameFormat'));
         assert.equal('123', attributes[4].textContent);
       });
 
@@ -461,7 +461,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var signature = doc.documentElement.getElementsByTagName('Signature');
 
         assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
@@ -486,7 +486,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var signature = doc.documentElement.getElementsByTagName(options.signatureNamespacePrefix + ':Signature');
         assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
       });
@@ -510,7 +510,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var signature = doc.documentElement.getElementsByTagName(options.prefix + ':Signature');
         assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
       });
@@ -534,7 +534,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var signature = doc.documentElement.getElementsByTagName('Signature');
         assert.equal('saml:Conditions', signature[0].previousSibling.nodeName);
       });
@@ -559,7 +559,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var audienceRestriction = doc.documentElement.getElementsByTagName('saml:AudienceRestriction');
         assert.equal(audienceRestriction.length, 0);
       });
@@ -576,7 +576,7 @@ describe('saml 2.0', function () {
 
         assertSignature(signedAssertion, options);
 
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
         var attributeStatement = doc.documentElement.getElementsByTagName('saml:AttributeStatement');
         assert.equal(attributeStatement.length, 0);
       });
