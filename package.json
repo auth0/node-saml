@@ -8,6 +8,7 @@
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
     "@semantic-release/exec": "^7.0.3",
+    "conventional-changelog": "^7.2.1",
     "conventional-changelog-conventionalcommits": "^9.3.0",
     "chai": "^4.2.0",
     "husky": "^9.1.7",
@@ -39,6 +40,7 @@
   },
   "scripts": {
     "prepare": "husky",
-    "test": "mocha"
+    "test": "mocha",
+    "update-changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md"
   }
 }
