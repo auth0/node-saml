@@ -304,7 +304,7 @@ describe('saml 1.1', function () {
           xpathToNodeBeforeSignature: "//*[local-name(.)='Conditions']"
         };
         var signedAssertion = saml11[createAssertion](options);
-        var doc = new xmldom.DOMParser().parseFromString(signedAssertion);
+        var doc = new xmldom.DOMParser().parseFromString(signedAssertion, 'text/xml');
 
         var signature = doc.documentElement.getElementsByTagName('Signature');
 
@@ -438,7 +438,7 @@ describe('saml 1.1', function () {
             xmlenc.decrypt(encrypted, { key: fs.readFileSync(__dirname + '/test-auth0.key')}, function(err, decrypted) {
               if (err) return done(err);
 
-              var doc = new xmldom.DOMParser().parseFromString(decrypted);
+              var doc = new xmldom.DOMParser().parseFromString(decrypted, 'text/xml');
               var subjectConfirmationNodes = doc.documentElement.getElementsByTagName('saml:SubjectConfirmation');
               assert.equal(2, subjectConfirmationNodes.length);
               for (var i=0;i<subjectConfirmationNodes.length;i++) {
@@ -503,7 +503,7 @@ describe('saml 1.1', function () {
 
           saml11[createAssertion](options, function (err, encrypted) {
             if (err) return done(err);
-            var doc = new xmldom.DOMParser().parseFromString(encrypted);
+            var doc = new xmldom.DOMParser().parseFromString(encrypted, 'text/xml');
             var encryptionMethod = doc.getElementsByTagName('xenc:EncryptionMethod')[0];
             assert.equal('http://www.w3.org/2009/xmlenc11#aes256-gcm', encryptionMethod.getAttribute('Algorithm'));
             done();
@@ -523,7 +523,7 @@ describe('saml 1.1', function () {
 
           saml11[createAssertion](options, function (err, encrypted) {
             if (err) return done(err);
-            var doc = new xmldom.DOMParser().parseFromString(encrypted);
+            var doc = new xmldom.DOMParser().parseFromString(encrypted, 'text/xml');
             var encryptionMethod = doc.getElementsByTagName('xenc:EncryptionMethod')[0];
             assert.equal('http://www.w3.org/2001/04/xmlenc#aes256-cbc', encryptionMethod.getAttribute('Algorithm'));
             assert.equal(consoleSpy.called, true);
