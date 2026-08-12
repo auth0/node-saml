@@ -1,3 +1,9 @@
+> # ⚠️ This repository is being archived
+>
+> **`node-saml` is no longer actively maintained and will be archived (made read-only) on 2 November 2026.**
+>
+> For details and to ask questions, see the [pinned announcement issue](https://github.com/auth0/node-saml/issues/118).
+
 # node-saml
 
 Create SAML assertions. Supports SAML 1.1 and SAML 2.0 tokens.
